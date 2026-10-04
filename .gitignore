@@ -1,0 +1,42 @@
+# secrets and credentials
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+id_*
+secrets/
+credentials*
+
+# model artifacts and data
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.npz
+*.npy
+checkpoints/
+datasets/
+data/
+
+# runtime output
+__pycache__/
+pycache/
+*.pyc
+.cache/
+logs/
+*.log
+
+# internal material never belongs here
+private/
+internal/
+work/
+
+# editor and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

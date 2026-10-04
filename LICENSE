@@ -1,0 +1,28 @@
+Copyright (c) 2026 DotrixAI. All rights reserved.
+
+This repository contains research documentation about the DotrixAI CIR research
+program: text, tables, figures and the small script that draws the figures.
+
+Permitted use
+-------------
+You may read, link to and cite this material, and quote reasonable excerpts with
+attribution to "DotrixAI, CIR research repository", for research, review,
+discussion, journalism and education.
+
+Not granted
+-----------
+Publication of these research results does not grant any license or other right
+to DotrixAI technology, including CIR architectures, implementations, source
+code, kernels, training methods, model weights, data, patents or patent
+applications, trade secrets, or unpublished materials. Nothing in this
+repository is an offer to license any technology. No right to reproduce or
+redistribute the repository as a whole is granted except as above.
+
+No warranty
+-----------
+The material is provided "as is", without warranty of any kind. It describes
+research in progress; results are provisional and may be revised or withdrawn.
+
+These terms may change. Formal licensing terms for any part of this repository
+may be published later; until then, contact DotrixAI for any use not covered
+above (see SECURITY.md or https://dotrixai.com/contact).

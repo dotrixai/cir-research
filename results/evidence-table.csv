@@ -1,0 +1,28 @@
+evidence_id,date,claim,candidate,baseline,scale,metric,value,status,measurement_type,seeds,main_limitation
+I158,2026-09-26,Pure delta-rule recurrence reaches matched quality at lower cost,pure delta,TFSR (AdamW),4M / T4096 / b8 / 49M tok,cost to final Q,0.587-0.594,SUPERSEDED,ESTIMATED,2,Both arms used AdamW; reversed under Muon (I177)
+I177,2026-09-27,Under Muon the Transformer beats pure delta,pure delta,TFSR (Muon),4M / T4096 / b8 / 49M tok,BPB difference at 1500 updates (TF better),0.051,SUPPORTED,MEASURED,1,One seed
+I182,2026-09-27,Muon makes Transformer induction heads form early,n/a,TFSR (Muon vs AdamW),4M / T4096,induction enrichment at 625 updates (Muon vs AdamW),14.2x vs 2.3x,SUPPORTED,MEASURED,1,Exploratory attention probe
+I188,2026-09-27,A010 beats a Muon Transformer,A010,TFSR (Muon),4M / T4096 / b8 / 49M tok,cost to final Q,0.570,SUPERSEDED,ESTIMATED,1,Baseline later strengthened
+I203,2026-09-30,A010 beats gated full-attention Transformer,A010,gated full-attention TF,4M / T4096 / b8 / 49M tok,cost to final Q (BPB difference 0.034),0.587-0.625,REPRODUCED,ESTIMATED,2,Expensive baseline at this scale
+I209,2026-10-01,Gated local-global TF is cheaper at near-equal quality,n/a,gated local-global TF vs gated full-attention TF,4M / T4096,cost per update ratio,0.907,SUPPORTED,MEASURED,1,Later superseded as cheapest by B1A
+I209,2026-10-01,Longer context does not help A010,A010,gated local-global TF,4M / T4096 vs T8192,cost per update ratio,0.887 -> 0.942,SUPPORTED,MEASURED,1,One session
+I211,2026-10-01,A010 beats gated local-global Transformer,A010,gated local-global TF,4M / T4096 / b8 / 49M tok,cost to final Q (BPB difference 0.041),0.633-0.643,REPRODUCED; CONTESTED,ESTIMATED,2,Baseline not cheapest; baseline learning rate inherited
+I211,2026-10-01,A010 vs gated local-global at early Q,A010,gated local-global TF,4M / T4096 / b8,cost to Q = TF at 375-500 updates,0.78-0.82,REPRODUCED,ESTIMATED,2,Gate 0.75 not passed at early Q
+I220,2026-10-02,Margin grows with size at fixed tokens per parameter,A010,gated local-global TF,2.8M vs 4M / ~12.3 tok/param,BPB difference,0.025 vs 0.041,PROVISIONAL,MEASURED,1,Learning rates differ between widths
+I221,2026-10-02,A010 at width 448 (fixed tokens),A010,gated local-global TF,7M / T4096 / 49M tok (~6.4 tok/param),cost to final Q,0.719,PROVISIONAL,ESTIMATED,1,Tokens per parameter fell; one seed
+I222,2026-10-02,A019 cost at intermediate Q,A019,gated local-global TF,4M / T4096 / 750 updates,cost to Q = TF at 750 updates,0.530,SUPERSEDED,ESTIMATED,1,Screen at intermediate Q; superseded by I240
+I224,2026-10-03,Engram helps the Transformer more than A010,A010+Engram,gated local-global TF + Engram,4M / T4096 / 750 updates,BPB gain from Engram (TF vs A010),0.118 vs 0.093,SUPPORTED,MEASURED,1,750 updates only
+I228,2026-10-03,n-gram heads on both sides erase the recurrent-specific edge,A019,TF-LG + n-gram heads,4M / T4096 / 750 updates,BPB difference (A019 better),0.004,SUPPORTED,MEASURED,1,One seed
+I240,2026-10-03,A019 vs standard and matched-module Transformer at final Q,A019,TF-LG (D1) / TF-LGN (D2),4M / T4096 / 1500 updates,cost to final Q (D1 / D2),0.50 / 0.84,CONTESTED,ESTIMATED,1,Gain from a generic prior-art module
+I240,2026-10-03,A010 vs matched-module Transformer at final Q,A010,TF-LG + n-gram heads (D2),4M / T4096 / 1500 updates,cost to final Q,1.06,PROVISIONAL,ESTIMATED,1,One seed
+I241,2026-10-03,A010 recall cost advantage over all tested Transformers,A010,TF full / TF-LG / TF-LGN,4M / T4096,cost to recall,0.36-0.69,SUPERSEDED,ESTIMATED,2,Biased estimator (corrected in I245)
+I242,2026-10-03,One-attention Transformer B1A matches TF-LG at half the cost,n/a,B1A vs gated local-global TF,4M / T4096 / 1500 updates,cost per update ratio (BPB within 0.005),0.502,SUPPORTED,MEASURED,1,One seed
+I242,2026-10-03,A010 vs B1A in BPB,A010,B1A,4M / T4096 / 1500 updates,cost to final Q,1.27,PROVISIONAL,ESTIMATED,1,One seed; session R79
+I243,2026-10-03,Attention dominates B1A forward time,n/a,B1A,4M / T4096 / b2,attention share of forward time,0.45,PROVISIONAL,MEASURED,1,Indicative profile not canonical session
+I244,2026-10-04,Equal-compute attack: BPB tie,A010,B1A width 448,4M vs 7M / T4096 / 49M tok,BPB difference at 1500 updates (A010 better),0.0023,PROVISIONAL,MEASURED,1,Within seed noise
+I245,2026-10-04,Corrected recall cost vs cheapest Transformers,A010,B1A / TF-LGN,4M / T4096,cost to recall plateau,0.74-1.0,CONTESTED,ESTIMATED,1-2,Depends on quality level and seed
+I246,2026-10-04,Softmax models use little context beyond ~2K tokens,A010; B1A,n/a,4M / T4096,BPB change from 512-2048 to 2048-4096 positions (bits/token),<=0.007,SUPPORTED,MEASURED,1,This data only
+I247,2026-10-04,Recurrent state does not replace distant attention,A010,B1A,4M / T4096,BPB increase with attention window 512 (B1A / A010),0.0104 / 0.0113,SUPPORTED,MEASURED,1,Inference-time windows only
+I248,2026-10-04,Update efficiency vs B1A constant across width,A010,B1A,4M and 7M / 49M tok,rho_u (width 320 / 448),0.70 / 0.71,PROVISIONAL,ESTIMATED,1,Fixed tokens; cost about 1.23 at both widths
+I250,2026-10-04,No softmax model copies verbatim beyond ~2K tokens at this scale,A010; B1A; A019,n/a,4M / T4096,copy gain at gap 2560 (A010 / B1A / A019) bits per token,0.041 / 0.041 / 2.91,SUPPORTED,MEASURED,1,32 samples per gap
+R81,2026-10-04,Thin recurrent mixers on B1A beat B1A,A025,B1A,4M / T4096 / 1500 updates,cost to final Q (criterion <= 0.90),pending,UNDER EVALUATION,n/a,1,Interim: small fraction of A010 margin retained

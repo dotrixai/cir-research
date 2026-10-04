@@ -1,0 +1,15 @@
+capability,comparison,result,status,evidence,main_limitation
+Language prediction (BPB),A010 vs gated full-attention and local-global TF,0.034-0.041 lower BPB (two seeds),BETTER vs earlier baselines,I203; I211,Small bilingual corpus
+Language prediction (BPB),A010 vs B1A,1.23-1.27x cost to same BPB; tie at equal compute,WORSE vs cheapest Transformer,I242; I244; I248,One seed
+Short-range copying,A010 vs gated full-attention TF,copy gain 1.57 vs 1.45 bits/token at distance 256,BETTER (PROVISIONAL),I192,24 samples per distance
+Long verbatim copying,A010 / B1A vs A019,about 0.04 vs 2.91 bits/token at gap 2560,WORSE than exact n-gram heads,I250,32 samples per gap
+Associative recall,A010 vs expensive Transformers,cost to recall 0.36-0.50,BETTER,I245,Synthetic probe
+Associative recall,A010 vs cheapest Transformers,cost to recall 0.74-1.0,MARGINAL (CONTESTED),I245,One seed for B1A
+Bracket closing,A010 vs gated full-attention TF,about 1 bit/token better at distance 17-128,BETTER (PROVISIONAL),I206,Small samples; one comparator
+Synthetic state tracking,H032 (planned),not run,NOT YET ESTABLISHED,H032,Prior art; synthetic
+Long-range memory,A010 vs B1A,no advantage; little context used beyond ~2K tokens,NO ADVANTAGE FOUND,I246; I247; I250,Data rarely needs long context
+Grammar,all 4M models,near chance with earlier instruments,NOT YET ESTABLISHED (instrument unreliable),I161,Scale
+Relational binding,all 4M models,instruments too weak to separate models,NOT YET ESTABLISHED (instrument unreliable),R17 (2026-09-20),Scale
+Reasoning,none,not tested,NOT YET ESTABLISHED,n/a,Not measurable at 4M
+Coherent generation,all 4M models,fails for all models,NOT YET ESTABLISHED,reset review 2026-10-02,Scale
+Robustness,none,not tested,NOT YET ESTABLISHED,n/a,n/a
