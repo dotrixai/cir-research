@@ -105,6 +105,7 @@ Full table: [results/current-evidence.md](results/current-evidence.md) · machin
 - DotrixAI: https://dotrixai.com
 - CIR research page: https://dotrixai.com/cir
 - X: https://x.com/dotrixai
+- GitHub: https://github.com/dotrixai
 
 ## License and citation
 
