@@ -2,7 +2,7 @@
 
 CIR is an active DotrixAI research program investigating AI architectures and learning systems with lower cost-to-capability than strong Transformer systems.
 
-**Status: Active Research** · Snapshot: 2026-10-04 07:15 UTC · Website: [dotrixai.com/cir](https://dotrixai.com/cir)
+**Status: Active Research** · Snapshot: 2026-10-05 15:00 UTC · Website: [dotrixai.com/cir](https://dotrixai.com/cir)
 
 > This repository documents research in progress. Results are provisional unless marked REPRODUCED or VALIDATED. Candidates and claims may be superseded as stronger baselines and new evidence arrive, and several already have been. It contains research documentation only, not the CIR implementation.
 
@@ -29,16 +29,16 @@ The cheapest fair Transformer known at the time of a claim is a mandatory compar
 
 Scope of everything below: about 4M parameters (one additional width at about 7M), 4,096-token context, batch 8, at most 1,500 updates (about 49M tokens), English and Indonesian text, one commodity laptop CPU. No GPU results.
 
-- **Strongest reproduced candidate:** A010, two delta-rule recurrent mixing layers followed by one full softmax attention layer, trained with Muon.
-- **Strongest baseline:** B1A, a Transformer with a single global attention layer. It matches our previous best baseline in BPB at about 0.50× its cost per token. It was found by CIR's own baseline attack.
-- **Reproduced signal (two seeds):** A010 reaches the final quality of a gated local-global Transformer at **0.633–0.643×** its training cost, and of a gated full-attention Transformer at **0.59–0.63×** (ESTIMATED). At early quality levels the ratio is 0.78–0.82.
-- **Against the cheapest Transformer (B1A):** A010 needs about **1.23–1.27×** the cost to reach the same BPB; at equal compute the two tie. Its associative-recall advantage is **0.74–1.0×**, i.e. marginal (ESTIMATED, one seed).
-- **Generic modules:** when the Transformer is given the same static n-gram heads, the recurrent-specific advantage falls to about zero. The Engram memory module helps the Transformer more than it helps A010.
-- **Scaling:** three small widths tested. Against B1A the update-efficiency ratio stays at 0.70–0.71 from 4M to 7M parameters, so the cost ratio stays around 1.23. Nothing is known above about 7M parameters.
-- **Capabilities:** BPB, copying, associative recall and bracket closing have been probed. Grammar, binding, reasoning and coherent generation are not measurable at this scale.
-- **Under attack now:** R81 tests a cheaper hybrid (A025, thin recurrent mixers on B1A). Interim curves suggest it keeps only a small part of A010's margin; the formal verdict is pending.
+- **Strongest baseline:** B1A, a Transformer with a single global attention layer. It matches our previous best baseline in BPB at about 0.50× its cost per update. It was found by CIR's own baseline attack, and a windowed variant measured no cheaper to matched quality.
+- **Strongest reproduced candidate:** A010, two delta-rule recurrent mixing layers followed by one full softmax attention layer, trained with Muon. Against earlier Transformers it reaches matched BPB at **0.633–0.643×** (gated local-global) and **0.59–0.63×** (gated full attention) the cost, in two seeds (ESTIMATED). Against B1A it costs **1.23–1.27×**.
+- **Cheapest hybrid (A025, thin recurrent mixers on B1A):** breaks even with B1A at **0.985×** (0.949× with an optimized implementation) and fails both frozen criteria. **The delta-hybrid mixer family is closed for BPB at context ≤ 4,096.**
+- **Analytic bound:** even a free replacement for B1A's attention would leave a per-update cost ratio of about 0.77–0.87 at this context length (ESTIMATED from canonical timings). Mixer substitution cannot reach the 0.50 gate in this regime.
+- **Generic modules:** Engram and static n-gram heads help Transformers as much or more than CIR candidates, so they are neutral under D2.
+- **State tracking, the one structural asymmetry found:** recurrent mixers that allow negative eigenvalues learn parity and extrapolate it; B1A never learns it. Inside the language model this emerged in only **1 of 3 runs**. It is a narrow capability result, and the mechanism is prior art.
+- **Scaling:** three small widths tested; nothing is known above about 7M parameters. Larger runs are beyond the current CPU budget.
+- **Under test now:** R88 (does a stronger parity signal make the capability reliable?) and R89 (does formal-language pre-pretraining save tokens, and differently per organization?).
 
-**Honest summary: CIR currently has no robust cost advantage over the cheapest fair Transformer we know. The program objective has not been reached.**
+**Honest summary: no CIR organization has a cost advantage over the cheapest fair Transformer we know. The program objective has not been reached.**
 
 Details: [docs/current-state.md](docs/current-state.md).
 
@@ -48,9 +48,11 @@ Details: [docs/current-state.md](docs/current-state.md).
 |---|---|---|---|
 | A010 vs gated local-global Transformer: 0.041 lower BPB, cost 0.633–0.643 at final Q | REPRODUCED, CONTESTED | Real advantage over that baseline | Baseline no longer the cheapest; its learning rate was inherited, not screened |
 | A010 vs gated full-attention Transformer: 0.034 lower BPB, cost 0.59–0.63 | REPRODUCED | Holds against the strongest Transformer in quality tested | Full attention is an expensive baseline at this scale |
-| B1A matches local-global BPB (within 0.005) at 0.502× cost per token | SUPPORTED | Earlier D1 cost ratios used an inefficient baseline | One seed |
+| B1A matches local-global BPB (within 0.005) at about 0.50× cost per update | SUPPORTED | Earlier D1 cost ratios used an inefficient baseline | One seed; per-update ratio confirmed in four sessions |
 | A010 vs B1A: BPB cost 1.23–1.27×; tie at equal compute | PROVISIONAL | No BPB cost advantage against the cheapest Transformer | One seed per arm |
 | Associative-recall cost vs cheapest Transformers: 0.74–1.0× | CONTESTED | Marginal; large recall advantages only against expensive Transformers | Depends on quality level and seed |
+| A025 (thin mixers on B1A) vs B1A: BPB cost 0.985 (0.949 optimized) | FALSIFIED as a cost candidate | Hybrid family breaks even with the cheapest Transformer | One seed; this regime only |
+| Parity: negative-eigenvalue mixers learn and extrapolate it; B1A does not | SUPPORTED (synthetic) | A real but narrow expressivity asymmetry | Prior art; in the language model 1 of 3 runs |
 | Static n-gram heads (A019): 0.50 vs D1, 0.84 vs D2 | CONTESTED | Gain comes from a generic, prior-art module | One seed |
 | Recall cost 0.36–0.69 | SUPERSEDED | Estimator was biased toward CIR | Corrected method in use |
 | Pure delta-rule recurrence at 0.587 | SUPERSEDED | Held only under AdamW; reversed under Muon | Kept for history |
@@ -74,7 +76,8 @@ Full table: [results/current-evidence.md](results/current-evidence.md) · machin
 ## What has not been proven
 
 - Any behavior above about 7M parameters, beyond 1,500 updates, or beyond 4,096 tokens of context in the current candidate family.
-- Any advantage over the cheapest fair Transformer known (B1A).
+- Any cost advantage over the cheapest fair Transformer known (B1A).
+- Reliable emergence of state tracking inside a language model, or any language benefit from it.
 - Reasoning, grammar, binding, robustness or coherent generation parity; these are not yet measurable at this scale.
 - Any advantage on GPUs, other CPUs or other hardware.
 - Commercial readiness. DotrixAI does not currently offer CIR technology for license.

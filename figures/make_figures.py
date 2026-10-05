@@ -55,7 +55,8 @@ def cost_to_q():
 
 
 def baseline_history():
-    # A010 cost to the baseline's final BPB, as the baseline was strengthened.
+    # A010 cost to the baseline's final BPB, as the baseline was strengthened; last row is
+    # the cheapest hybrid against the frontier baseline.
     # (label, low, high, seeds, evidence). Values from different cost sessions; ESTIMATED.
     data = [
         ("TFSR, Muon (27 Sep)", 0.570, 0.570, 1, "I188"),
@@ -63,8 +64,9 @@ def baseline_history():
         ("gated local-global (1 Oct)", 0.633, 0.643, 2, "I211"),
         ("local-global + n-gram heads, D2 (3 Oct)", 1.06, 1.06, 1, "I240"),
         ("B1A, one attention layer (3-4 Oct)", 1.23, 1.27, 1, "I242, I248"),
+        ("A025 (thin hybrid) vs B1A (4 Oct)", 0.949, 0.985, 1, "I251, I252"),
     ]
-    fig, ax = plt.subplots(figsize=(7.2, 3.4))
+    fig, ax = plt.subplots(figsize=(7.2, 3.8))
     for i, (label, lo, hi, seeds, ev) in enumerate(data):
         y = len(data) - 1 - i
         ax.plot([0, lo], [y, y], color=GRID, lw=1, zorder=1)
@@ -80,10 +82,10 @@ def baseline_history():
     ax.set_yticklabels([d[0] for d in reversed(data)], fontsize=8)
     ax.set_xlim(0, 2.1)
     ax.set_ylim(-0.6, len(data) - 0.2)
-    ax.set_xlabel("A010 cost to baseline's final BPB (below 1 favors CIR), ESTIMATED")
+    ax.set_xlabel("CIR cost to baseline's final BPB (below 1 favors CIR), ESTIMATED")
     ax.spines[["top", "right", "left"]].set_visible(False)
     ax.tick_params(axis="y", length=0)
-    ax.set_title("A010's cost ratio as the Transformer baseline was strengthened", fontsize=10, loc="left", color=INK)
+    ax.set_title("CIR cost ratio as the Transformer baseline was strengthened", fontsize=10, loc="left", color=INK)
     fig.tight_layout()
     fig.savefig(HERE / "baseline-history.svg", metadata={"Date": None})
     plt.close(fig)

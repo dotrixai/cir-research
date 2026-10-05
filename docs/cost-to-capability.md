@@ -28,8 +28,15 @@ The same pair varies by about ±3% between sessions, so ratios are compared only
 | R80 | B1A (width 320) | 0.506 |
 | | B1A (width 448) | 0.794 |
 | | A010 | 0.887 |
+| R81 | A025 | 0.592 |
+| | B1A (width 320) | 0.501 |
+| | A010 | 0.890 |
+| R82 | A025 | 0.587 |
+| | A025, optimized implementation | 0.569 |
+| | B1A (width 320) | 0.500 |
+| | B1A, attention window 512 | 0.457 |
 
-A010 costs about 1.75–1.80× B1A per update. In profiling, B1A's single attention layer is about 45% of its forward time at 4,096 tokens (indicative, not canonical).
+A010 costs about 1.75–1.80× B1A per update; A025 about 1.18×. A 512-token attention window saves only 8.6% of B1A's cost per update on this CPU. In profiling, B1A's single attention layer is about 45% of its forward time at 4,096 tokens (indicative, not canonical).
 
 ## A010 against earlier baselines: two seeds
 
@@ -64,6 +71,8 @@ Reading: A019's low D1 ratio is mostly the n-gram heads, which help a Transforme
 | Comparison | ρ_u | ρ_c | Cost ratio | Seeds |
 |---|---|---|---|---|
 | A010 vs B1A, width 320, BPB | 0.70 | 1.75–1.80 | **1.23–1.27** | 1 |
+| A025 vs B1A, width 320, BPB | about 0.83 | 1.18 | **0.985** (0.980 re-measured; 0.949 optimized) | 1 |
+| A025n vs B1A, BPB on text with 6% synthetic parity examples | about 0.80 | 1.18 | 0.939 | 1 |
 | A010 width 448 vs B1A width 448, BPB (fixed tokens) | 0.71 | about 1.77 | about 1.25 | 1 |
 | A010 vs B1A widened to equal cost per update, BPB | | | about 1.10 (BPB difference 0.0023, a tie) | 1 |
 | A010 vs B1A, associative recall (N=8 / N=32, at B1A's plateau) | | | 0.81 / 0.78 | 1 |
@@ -86,4 +95,6 @@ Large recall advantages exist only against expensive Transformers. Against the c
 ## Bounds
 
 - **Longer context does not help A010.** Per-update cost ratio A010/TF-LG rises from 0.887 at 4,096 tokens to 0.942 at 8,192 (MEASURED, I209).
-- **Amdahl bound (ESTIMATED).** B1A's training cost splits roughly into shared parts (channel mixing, embeddings, output head), mixer projections, and the attention kernel. A recurrent core that replaced the attention kernel at zero cost would still leave a per-update ratio of 0.55–0.72 against B1A at 4,096 tokens. Reaching the 0.50 gate by mixer substitution would therefore also need a large update-efficiency advantage, for which there is no evidence against B1A.
+- **Amdahl bound (ESTIMATED).** B1A's training cost splits roughly into shared parts (channel mixing, embeddings, output head), mixer projections, and the attention kernel. A recurrent core that replaced the attention kernel at zero cost would still leave a per-update ratio of 0.55–0.72 against B1A at 4,096 tokens by profiling, and about 0.77–0.87 using the attention share implied by the canonical windowing measurement (I252). Reaching the 0.50 gate by mixer substitution would therefore also need a large update-efficiency advantage. Against B1A, the best measured is about 0.70 (A010), paid for by 1.75× cost per update.
+- **The hybrid family is closed in this regime.** The cheapest hybrid, A025, trades about 35–40% of A010's update advantage for about a quarter of its extra per-update cost, and lands at break-even (0.985). An optimized implementation gave only 3% more.
+- **Mixed-data regime.** With 6% synthetic parity data, A025n is 0.939× B1A. That is below parity but above the frozen 0.90 criterion, and the BPB gap appeared whether or not A025n learned parity (I256). It most likely reflects B1A being disrupted by tokens it cannot model.

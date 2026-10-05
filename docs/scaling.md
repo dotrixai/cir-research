@@ -46,4 +46,4 @@ These are not evidence.
 3. Reproduction with a second seed at the largest width.
 4. Confirmation on at least one additional hardware type, preferably GPU.
 
-None of these conditions is currently met.
+None of these conditions is currently met. Runs at 30M+ parameters or 16K+ context would take days to weeks each on the current hardware and are not scheduled.

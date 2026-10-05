@@ -16,7 +16,7 @@ CIR is DotrixAI's first major research program. It asks one question: can a diff
 
 ## Where the program stands
 
-At the time of the [current snapshot](current-state.md), the strongest reproduced CIR candidate (A010) beats several strong Transformer baselines on cost to matched BPB, in two seeds. CIR's own baseline attack then found a cheaper Transformer (B1A) against which that advantage disappears. The program objective has not been reached. Current work tests whether any remaining structural asymmetry exists (state tracking, very long contexts) and whether a cheaper hybrid can beat B1A.
+At the time of the [current snapshot](current-state.md), the strongest reproduced CIR candidate (A010) beats several strong Transformer baselines on cost to matched BPB, in two seeds. CIR's own baseline attack then found a cheaper Transformer (B1A) against which that advantage disappears, and the cheapest hybrid only breaks even with it. The program objective has not been reached. The one structural asymmetry found so far is a narrow capability (state tracking), which emerges unreliably inside a language model. Current work tests whether a stronger signal or formal-language pre-pretraining changes that.
 
 ## How to read this repository
 

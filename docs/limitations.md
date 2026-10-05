@@ -29,8 +29,9 @@ What the current results cannot tell you.
 
 ## Open questions
 
-1. Does any structural cost asymmetry between recurrence and attention survive at practical context lengths once generic modules are shared? (R81, R74)
-2. Is there an expressivity advantage (state tracking) and does it matter for language? (H032, A026)
-3. Is there a regime, such as very long context with real long-range needs, where O(1)-per-token state beats O(T) attention on total cost?
-4. How do the cost ratios change on GPUs and at 100M+ parameters?
-5. How should the denominator be defined when generic modules make the "strong Transformer" a moving target? Currently both D1 and D2 are reported.
+1. Does any structural cost asymmetry between recurrence and attention exist outside this regime (longer context, larger models)? At ≤ 4,096 tokens and about 4M parameters, the answer for mixer substitution is no (R81, R82, analytic bound).
+2. Can the state-tracking asymmetry be made to emerge reliably inside a language model, and is it worth anything for language? (R88)
+3. Does formal-language pre-pretraining save tokens, and does the saving depend on organization? (R89, H033)
+4. Is there a regime, such as very long context with real long-range needs, where O(1)-per-token state beats O(T) attention on total cost?
+5. How do the cost ratios change on GPUs and at 100M+ parameters? This is beyond the current CPU budget.
+6. How should the denominator be defined when generic modules make the "strong Transformer" a moving target? Currently both D1 and D2 are reported.

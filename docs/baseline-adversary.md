@@ -14,9 +14,10 @@ CIR deliberately strengthens the Transformer it competes against. A dedicated la
 | 3 Oct | **One global attention layer (B1A):** remove mixers from layers 0–1 | Matches the local-global Transformer in BPB at 0.502× cost per update. A010 becomes 1.23–1.27× in BPB cost. **BPB claim lost.** | I242, I248 |
 | 4 Oct | **Equal-compute attack:** B1A widened to A010's cost per update | BPB tie (0.0023). Recall slightly better for A010. | I244 |
 | 4 Oct | **Estimator audit** (recall cost) | Comparator was charged its full budget although its recall had plateaued. Corrected recall advantage vs cheapest Transformers: 0.74–1.0. **Capability claim weakened to marginal.** | I245 |
-| 4 Oct | **Windowed B1A** (analysis and evaluation-only probe) | Windowing B1A's attention to 512 costs about 0.010 BPB at inference; estimated saving 10–30% per update. Training attack deferred until a candidate is within 15% of B1A; direct timing in R82. | I247 |
+| 4 Oct | **Windowed B1A** (probe, then canonical timing) | Windowing B1A's attention to 512 costs up to 0.010 BPB and saves only 8.6% per update on this CPU (estimated beforehand at 10–30%). Not cheaper to matched quality, so **B1A stays the frontier**. | I247, I252 |
+| 4 Oct | **Cheapest hybrid against B1A** (R81, R82) | A025, B1A plus thin recurrent mixers, breaks even (0.985×; 0.949× with an optimized implementation). **Delta-hybrid family closed** at context ≤ 4,096. | I251, I252 |
 
-![A010's cost ratio to the baseline's final BPB as the baseline was strengthened](../figures/baseline-history.svg)
+![CIR cost ratio to the baseline's final BPB as the baseline was strengthened; the last row is the cheapest hybrid A025 against B1A](../figures/baseline-history.svg)
 
 Values come from different cost sessions and are ESTIMATED; each is comparable only to its own baseline.
 

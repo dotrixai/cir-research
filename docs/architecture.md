@@ -11,8 +11,9 @@ All arms in a comparison share the same model width, depth (3 layers), block des
 | A010 | delta-rule recurrent mixer | delta-rule recurrent mixer | full causal softmax attention (RoPE) | strongest reproduced candidate; contested against B1A |
 | A019 | delta-rule recurrent mixer | delta-rule recurrent mixer | static n-gram heads, no softmax | contested; advantage comes from a generic module |
 | A015 | as A010, plus an Engram-style memory | | | discovery only; comparison not continued |
-| A025 | thin delta-rule mixer added to B1A | thin delta-rule mixer added to B1A | global attention (as B1A) | under evaluation (R81) |
-| A026 | as A010, with transitions allowed negative eigenvalues | | | conditional on a synthetic test (H032) |
+| A025 | thin delta-rule mixer added to B1A | thin delta-rule mixer added to B1A | global attention (as B1A) | closed: breaks even with B1A (R81, R82) |
+| A025n | as A025, with recurrent transitions allowed negative eigenvalues (same cost per update) | | | state-tracking experiments (R83–R88) |
+| A026 | as A010, with transitions allowed negative eigenvalues | | | not run; A025n used instead |
 
 ### A010: why this shape
 
@@ -24,6 +25,10 @@ A010 came from mechanistic diagnosis, not search:
 So A010 gives each function the cheapest primitive found sufficient: recurrence for summarization in layers 0–1, one softmax layer for retrieval at the end. Probes show the two effects are nearly additive and that no token class favored the gated Transformer it was compared with (I190). Later probes found the division of labor holds: the softmax layer forms cleaner induction heads, and A010's recall does not depend on the recurrent context.
 
 The delta-rule layers use a matrix-valued state updated with an error-correcting (delta) write and a learned decay, trained with a chunkwise-parallel form. The chunkwise form is adopted from published work; it is not claimed as novel.
+
+### A025 and A025n: thin hybrids on the cheapest Transformer
+
+A025 adds a narrow delta-rule mixer to each of B1A's two mixer-free layers. It was the cheapest possible member of the hybrid family: about 1.18× B1A's cost per update. It kept roughly 35–40% of A010's update-efficiency advantage, which is just enough to break even (0.985×). A025n changes only the range of the recurrent transition so that it can take negative eigenvalues, a known requirement for state tracking in linear recurrent models. The change costs nothing per update.
 
 ### A019: static n-gram heads
 
@@ -59,5 +64,6 @@ CIR makes no novelty claim for any component above. Closest published work:
 | Unbounded n-gram indices | Infini-gram, arXiv:2401.17377 |
 | Fewer attention layers | PAR Transformer, arXiv:2009.04534; "What Matters in Transformers?", arXiv:2406.15786 |
 | Muon optimizer | Jordan, 2024 (blog); Muon on associative memory, arXiv:2509.26030 |
+| Formal-language pre-pretraining | Hu et al., ACL 2025, arXiv:2502.19249; neural cellular automata pre-pretraining, arXiv:2603.10055 |
 
 What CIR contributes so far is the measurement discipline (matched-capability cost accounting against deliberately strengthened baselines) and the resulting map of which primitives matter at this scale, not a new architecture.

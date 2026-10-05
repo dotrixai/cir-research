@@ -6,7 +6,9 @@ Long verbatim copying,A010 / B1A vs A019,about 0.04 vs 2.91 bits/token at gap 25
 Associative recall,A010 vs expensive Transformers,cost to recall 0.36-0.50,BETTER,I245,Synthetic probe
 Associative recall,A010 vs cheapest Transformers,cost to recall 0.74-1.0,MARGINAL (CONTESTED),I245,One seed for B1A
 Bracket closing,A010 vs gated full-attention TF,about 1 bit/token better at distance 17-128,BETTER (PROVISIONAL),I206,Small samples; one comparator
-Synthetic state tracking,H032 (planned),not run,NOT YET ESTABLISHED,H032,Prior art; synthetic
+Synthetic state tracking (parity),negative-eigenvalue recurrence vs tiny B1A / full TF,0.96-0.98 vs ~0.50 at 4x training length,SUPPORTED,I253,Prior art; synthetic
+Synthetic state tracking (mod 5; S3),same,mod 5 unsolved; S3 one seed of two,NOT YET ESTABLISHED,I253,Harder tasks need more than one delta step per token
+State tracking inside the LM (parity),A025n vs B1A,learned in 1 of 3 runs; B1A never,PROVISIONAL (not reliable),I254; I256; I257,6% sparse synthetic data
 Long-range memory,A010 vs B1A,no advantage; little context used beyond ~2K tokens,NO ADVANTAGE FOUND,I246; I247; I250,Data rarely needs long context
 Grammar,all 4M models,near chance with earlier instruments,NOT YET ESTABLISHED (instrument unreliable),I161,Scale
 Relational binding,all 4M models,instruments too weak to separate models,NOT YET ESTABLISHED (instrument unreliable),R17 (2026-09-20),Scale

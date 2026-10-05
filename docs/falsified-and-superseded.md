@@ -13,6 +13,10 @@ Results CIR no longer believes, and why. Each one reduced uncertainty: it closed
 | A019 at 0.530 at intermediate quality | Measured at 750 updates against a baseline without the same module. Final-quality and D2 comparisons give 0.50 (D1) and 0.84 (D2) | SUPERSEDED | I222, I240 |
 | A010 BPB cost advantage at intermediate quality against the cheapest Transformer of the time | A Transformer with n-gram heads beat A010 from 500 updates at about 0.8× the per-update cost of the local-global Transformer | FALSIFIED | I228 |
 | Associative-recall cost 0.36–0.69× against all tested Transformers (two seeds) | Estimator bias: the comparator was charged its full 1,500 updates although its recall had plateaued. Corrected: 0.74–1.0× against the cheapest Transformers | SUPERSEDED | I241, I245 |
+| A thin delta hybrid (A025) beats the cheapest Transformer: frozen criteria BPB cost ≤ 0.90, recall cost ≤ 0.75 | 0.985 in BPB (0.949 with an optimized implementation); recall never reached B1A's plateau. Hybrid family closed for BPB at context ≤ 4,096 | FALSIFIED | I251, I252 |
+| A windowed B1A is 10–30% cheaper per update (estimate) | Measured on the canonical instrument: 8.6%. The CPU windowed kernel is far from its FLOP ideal | SUPERSEDED by measurement | I247, I252 |
+| Parity, once learned inside the language model, extrapolates to 8–16× the training length | Extrapolation horizon about 2×, and stable with longer training | FALSIFIED | I254, I255 |
+| State tracking emerges reliably inside the language model with about 6% synthetic data | 1 of 3 runs; seed 22 failed even with 2× the updates; a longer training span also failed | FALSIFIED at this signal strength | I256, I257 |
 | A010 keeps a BPB cost advantage over every Transformer tested | B1A (one attention layer) matches the previous baseline at 0.50× per-update cost; A010 is 1.23–1.27× against it | FALSIFIED against the frontier baseline | I242, I248 |
 
 ## Directions ruled out
@@ -28,6 +32,8 @@ Results CIR no longer believes, and why. Each one reduced uncertainty: it closed
 | Long-context recurrence route at this scale (hypothesis H031) | Softmax models at 4M copy almost nothing beyond about 2,000 tokens even with full attention; only exact n-gram indices are distance-independent, and those are a generic module. Credence about 5% | I246, I250 |
 | An organization with no learned mixer at all (n-gram heads only) | Considered and rejected before running: an artifact of the shallow, lookup-favoring regime that literature shows does not hold at scale | I250, literature |
 | An implementation optimization for A010's recurrent kernel | Numerically equivalent but not faster for A010 (memory-bound); the same idea did help a thinner mixer, now under test | I181, I249 |
+| A training-rule lever specific to recurrent organizations | First-principles pass: selective backward, low-rank updates, layer skipping and count-based statistics all apply to Transformers too, so they are neutral under D2. The only recurrent-specific lever (state carried across windows) adds little information on this data | reset, 4 Oct |
+| Removing dense projections from thin mixers (R74) | Cancelled before running: the thin-mixer family was closed by R81/R82 | direction decision, 4 Oct |
 | A selective-backward learning-rule idea (A023) | Cheap tier-1 test gave weak support; deferred | I226 |
 
 ## Measurement and method errors found

@@ -19,4 +19,8 @@ Major turning points only. All dates 2026 (UTC). Earlier work (before 24 Septemb
 | 3 Oct | A019 reaches 0.50 vs D1 at final quality, 0.84 vs D2 | Interesting gate only under D1, from a prior-art module |
 | 3 Oct | **Cheapest Transformer found (B1A):** one global attention layer matches the local-global Transformer at half the cost per update | BPB claim lost; B1A becomes mandatory comparator |
 | 4 Oct | Equal-compute attack gives a BPB tie; recall-cost estimator found biased and corrected (0.74–1.0) | No robust advantage over the cheapest fair Transformer |
-| 4 Oct | Analytic (Amdahl) bound: mixer substitution cannot reach 0.50 at 4,096 context; long-copy probes rule out the long-context recurrence route at this scale | Search redirected to state tracking and new primitives; R81 tests the last candidate of the hybrid family |
+| 4 Oct | Analytic (Amdahl) bound: mixer substitution cannot reach 0.50 at 4,096 context; long-copy probes rule out the long-context recurrence route at this scale | Search redirected to state tracking and new primitives |
+| 4 Oct | **Cheapest hybrid breaks even:** A025 reaches 0.985× B1A (0.949× optimized); windowed B1A measured only 8.6% cheaper per update | Delta-hybrid mixer family closed for BPB at context ≤ 4,096; first-principles reset; learning-rule axis also gives no CIR-specific lever |
+| 4 Oct | **State tracking (synthetic):** negative-eigenvalue recurrence learns and extrapolates parity; tiny Transformers do not | Narrow capability asymmetry supported; mechanism is prior art |
+| 4–5 Oct | **State tracking inside the LM:** learned in 1 of 3 runs; B1A never; mixed-data BPB advantage replicates regardless | Capability claim downgraded to "can emerge, not reliably" |
+| 5 Oct | Formal-language pre-pretraining proposed as a token-saving lever that may depend on organization (R89, H033) | New direction under test |
