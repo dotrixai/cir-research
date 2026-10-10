@@ -99,3 +99,20 @@ Literature search follows a staged pipeline: a decision-relevant question, termi
 ## 15. Periodic first-principles reset
 
 After major evidence changes, the board is rebuilt from: known facts, revoked beliefs, strongest evidence, strongest counter-evidence, bottlenecks, hidden assumptions, required primitives, alternative families and the highest-value next questions.
+
+## 16. Changes in versions 2.2 and 2.3
+
+Version 2.2 (2026-10-06) turned several guidelines into enforced gates:
+
+- **Baseline Frontier Gate.** Before a cost claim enters confirmation, the cheapest known opponent routes must be attacked. Frontier status is UNATTACKED, PROVISIONAL, STRONG or REOPENED.
+- **Economic Feasibility Gate.** Before a family receives many runs, a best-case cost floor and the required update efficiency are written down (the Amdahl bound on mixer substitution came from this).
+- **Breakthrough mode** when a family has no plausible path to the next gate.
+- **Learning efficiency (ρ_u)** as a research lane of its own.
+
+Version 2.3 (2026-10-10) added rules for turning evidence into systems:
+
+- **Best-known-system register.** A small Pareto set of incumbents per quality target, language, budget, hardware and training/inference trade-off, each with provenance (known prior art, adapted, recombination, implementation optimization, possibly novel).
+- **Integration decisions.** Every meaningful result gets an explicit ADOPT / ADAPT / TEST / DEFER / REJECT decision for the incumbent.
+- **Full-system accounting.** Table building, data exposure, gate fitting, training, prefill, decode, memory and serving are all recorded. **Averages across languages may not hide a failing language**: claims are reported per language.
+- **Attribution.** Imported mechanisms carry provenance and are never claimed as inventions. Improvements from known methods are reported as systems or organization advances, not CIR-specific architecture advances.
+

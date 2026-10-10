@@ -17,6 +17,16 @@ Results CIR no longer believes, and why. Each one reduced uncertainty: it closed
 | A windowed B1A is 10–30% cheaper per update (estimate) | Measured on the canonical instrument: 8.6%. The CPU windowed kernel is far from its FLOP ideal | SUPERSEDED by measurement | I247, I252 |
 | Parity, once learned inside the language model, extrapolates to 8–16× the training length | Extrapolation horizon about 2×, and stable with longer training | FALSIFIED | I254, I255 |
 | State tracking emerges reliably inside the language model with about 6% synthetic data | 1 of 3 runs; seed 22 failed even with 2× the updates; a longer training span also failed | FALSIFIED at this signal strength | I256, I257 |
+| CIR recurrence is the cheapest route to synthetic state tracking (A5) | A one-layer Transformer with chain-of-thought reached the target more cheaply | FALSIFIED | I267, I268 |
+| Formal-language pre-pretraining saves tokens at 4M, more for CIR (H033) | BPB rose by 0.025 (B1A) and 0.050 (A025) at 750 updates; credence about 5% | FALSIFIED | I260 |
+| S3 state tracking emerges inside the LM with 15% signal | Neither organization learned it, even at 1,500 updates | FALSIFIED at this signal | I261, I262 |
+| Counted prior trained inside the loss | Gradients to the model were suppressed and mixture weights mis-calibrated on repeated data | FALSIFIED | I276 |
+| A gate tuned on one language works on another | Worse than fixed weights; label-free normalization did not help | FALSIFIED | I302, I303 |
+| Attention in the first layer (A041), networks below width 128, pruning rare counts | Each was worse than the A039 configuration | FALSIFIED | I320, I336, I296 |
+| Counted organization 0.163 / 0.179× TF-LGN | Bridged TF-LGN cost; corrected to 0.172 / 0.189× | SUPERSEDED | I283, I284, I313 |
+| Chunked inference without overlap | First 128 tokens of each chunk 0.13 bits worse; fixed with 128-token overlap | SUPERSEDED | I330, I331 |
+| Macro (average) claims stand for each language | Indonesian 0.032× but English 0.149× at best | REVOKED as a reporting rule | I337, I338 |
+| Epoch-regime prediction (R160) | Failed its frozen prediction; causal test moved to R161 | FALSIFIED (prediction) | I340 |
 | A010 keeps a BPB cost advantage over every Transformer tested | B1A (one attention layer) matches the previous baseline at 0.50× per-update cost; A010 is 1.23–1.27× against it | FALSIFIED against the frontier baseline | I242, I248 |
 
 ## Directions ruled out

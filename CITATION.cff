@@ -5,8 +5,8 @@ type: generic
 authors:
   - name: "DotrixAI"
     website: "https://dotrixai.com"
-version: "2026-10-05"
-date-released: "2026-10-05"
+version: "2026-10-10"
+date-released: "2026-10-10"
 url: "https://dotrixai.com/cir"
 repository: "https://github.com/DotrixAI/cir-research"
 abstract: >-

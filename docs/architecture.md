@@ -14,6 +14,7 @@ All arms in a comparison share the same model width, depth (3 layers), block des
 | A025 | thin delta-rule mixer added to B1A | thin delta-rule mixer added to B1A | global attention (as B1A) | closed: breaks even with B1A (R81, R82) |
 | A025n | as A025, with recurrent transitions allowed negative eigenvalues (same cost per update) | | | state-tracking experiments (R83–R88) |
 | A026 | as A010, with transitions allowed negative eigenvalues | | | not run; A025n used instead |
+| A027 | delta-rule mixer with two update steps per token | | | synthetic state tracking only; cost claim falsified |
 
 ### A010: why this shape
 
@@ -33,6 +34,23 @@ A025 adds a narrow delta-rule mixer to each of B1A's two mixer-free layers. It w
 ### A019: static n-gram heads
 
 A019 replaces A010's softmax layer with several static heads that look up what followed earlier exact matches of the recent context (n-gram heads, a mechanism described in published work). It reached the cheapest ratio seen against a standard Transformer (0.50 at final quality, one seed) but the same heads help a Transformer almost equally (0.84 under D2). Exact n-gram indices copy verbatim spans at any distance (about 3 bits per token of copy gain at every tested gap), which no softmax model at this scale does beyond about 2,000 tokens.
+
+## Counted organization (generic, measured under D1)
+
+Since 2026-10-06 the main line is not a CIR-specific architecture. It is an organization of known parts:
+
+| Part | Description |
+|---|---|
+| Network | a small one-attention Transformer of the B1A family: width 192 (1.43M parameters) or width 128 (0.82M, configuration A039) |
+| Counted prior | n-gram tables per domain, counted once from exactly the training tokens the network saw, no gradient; counting costs about 0.1–0.2% of training |
+| In-context cache | n-gram counts from the current document |
+| Pointer | a longest-match expert that predicts the continuation of the longest earlier match in the context |
+| Gate | a tiny trained mixing gate (under 100 parameters) over features that do not use the target; tuned on a few thousand tokens of in-domain text |
+| Training trick | the network is trained on 1,024-token chunks; inference uses chunks overlapping by 128 tokens |
+
+The mixture is formed at inference. Training the network jointly with the counts inside the loss failed (I276). The gate does not transfer across languages (I302, I303). Exact feature sets and implementation are not published.
+
+Variants: A036 (width 192, windowed attention), A037 (width 192, chunked training), A039 (width 128, chunked training; the cheapest measured), A040 (width 96; no better), A041 (attention in the first layer; worse).
 
 ## Baselines
 
@@ -62,8 +80,12 @@ CIR makes no novelty claim for any component above. Closest published work:
 | Engram memory | DeepSeek-AI, arXiv:2601.07372 |
 | n-gram embeddings | Over-Tokenized Transformer, arXiv:2501.16975; N-Grammer, arXiv:2207.06366; LongCat n-gram embeddings, arXiv:2601.21204 |
 | Unbounded n-gram indices | Infini-gram, arXiv:2401.17377 |
+| Small Transformer + counted n-gram chain + cache + learned gate | modded-nanogpt PR #380 (2026); the closest prior art to the counted organization |
+| Neural model trained on the residual of an n-gram model | Li et al., Findings of EMNLP 2022, arXiv:2210.14431 |
+| Cache language models | Kuhn & De Mori 1990; Grave et al., ICLR 2017, arXiv:1612.04426 |
+| Short training context | SkyLadder, arXiv:2503.15450; sequence length warmup, arXiv:2108.06084 |
 | Fewer attention layers | PAR Transformer, arXiv:2009.04534; "What Matters in Transformers?", arXiv:2406.15786 |
 | Muon optimizer | Jordan, 2024 (blog); Muon on associative memory, arXiv:2509.26030 |
 | Formal-language pre-pretraining | Hu et al., ACL 2025, arXiv:2502.19249; neural cellular automata pre-pretraining, arXiv:2603.10055 |
 
-What CIR contributes so far is the measurement discipline (matched-capability cost accounting against deliberately strengthened baselines) and the resulting map of which primitives matter at this scale, not a new architecture.
+What CIR contributes so far is the measurement discipline (matched-capability cost accounting against deliberately strengthened baselines, identical data exposure verified by hash, leakage-free metrics, frozen predictions) and the resulting map of which primitives matter at this scale. It is not a new architecture, and the counted organization is not a new method.

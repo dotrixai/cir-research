@@ -4,7 +4,7 @@ What the current results cannot tell you.
 
 ## Scope
 
-- **Small models.** About 4M effective parameters for the main results; at most about 7M. Only 3 layers.
+- **Small models.** Counted organization: networks of 0.57–1.43M parameters. CIR mixers: about 4M effective parameters, at most about 7M. Only 3 layers.
 - **Short training.** At most 1,500 updates (about 49M tokens), below compute-optimal budgets; cosine schedule fixed to that horizon. Behavior beyond it is unknown.
 - **One context length.** Main results at 4,096 tokens; one measurement at 8,192.
 - **One batch size.** Batch 8. Recurrent cost per update is strongly batch-dependent.
@@ -27,11 +27,19 @@ What the current results cannot tell you.
 - **Prior art.** All components have close published equivalents. No architectural novelty is claimed.
 - **Scale.** Nothing here establishes behavior at 100M+ parameters, and projections suggest mixer-substitution savings shrink with width.
 
+## Counted organization specifically
+
+- **Language and repetition.** The English corpus (3.86M tokens) repeats quickly; the English advantage fades with budget. Whether this is repetition or language is open (R161).
+- **Deployment.** Decode cost unmeasured; count tables about 434 MB; the gate needs about 4,000 tokens of in-domain text and does not transfer across languages.
+- **Metric.** Bits per token on positions whose 12-token context is unseen in training. This removes credit for duplicates but differs from plain BPB.
+- **Prior art.** The organization is known; no novelty is claimed.
+- **D2.** A Transformer given the same counted tools has not been compared; no D2 claim is made.
+
 ## Open questions
 
-1. Does any structural cost asymmetry between recurrence and attention exist outside this regime (longer context, larger models)? At ≤ 4,096 tokens and about 4M parameters, the answer for mixer substitution is no (R81, R82, analytic bound).
-2. Can the state-tracking asymmetry be made to emerge reliably inside a language model, and is it worth anything for language? (R88)
-3. Does formal-language pre-pretraining save tokens, and does the saving depend on organization? (R89, H033)
-4. Is there a regime, such as very long context with real long-range needs, where O(1)-per-token state beats O(T) attention on total cost?
-5. How do the cost ratios change on GPUs and at 100M+ parameters? This is beyond the current CPU budget.
-6. How should the denominator be defined when generic modules make the "strong Transformer" a moving target? Currently both D1 and D2 are reported.
+1. Is the counted organization's advantage about data repetition or about language? (R161)
+2. Does English reach ≤ 0.10× with a larger corpus or a larger network?
+3. Does the advantage hold against larger Transformers above 4× budget, and at 30M+ parameters?
+4. What are decode cost and memory-constrained cost?
+5. Is there any CIR-specific primitive that reduces dense computation for language quality (D2)? None is known.
+6. Can state tracking be made to matter for language at any affordable scale?

@@ -91,7 +91,37 @@ def baseline_history():
     plt.close(fig)
 
 
+def counted_path():
+    # Counted organization: training cost to TF-LGN's final quality, average of EN and ID,
+    # corrected (I313). Bars start at zero; ranges are the two seeds where available.
+    rows = list(csv.DictReader(open(RESULTS / "counted-path.csv", encoding="utf8")))
+    fig, ax = plt.subplots(figsize=(7.2, 3.6))
+    for i, r in enumerate(rows):
+        y = len(rows) - 1 - i
+        lo, hi = float(r["low"]), float(r["high"])
+        ax.barh(y, hi, color=GRID, height=0.5, zorder=1)
+        ax.barh(y, lo, color=A, height=0.5, zorder=2)
+        text = f"{lo:g}" if lo == hi else f"{lo:g} to {hi:g}"
+        seeds = int(r["seeds"])
+        ax.text(hi + 0.004, y, f"{text}  ({seeds} seed{'s' if seeds > 1 else ''}, {r['evidence']})", va="center", fontsize=8, color=INK)
+    for gate, label in [(0.10, "0.10 gate"), (0.20, "0.20 gate")]:
+        ax.axvline(gate, color=MUTED, lw=0.8, ls=":")
+        ax.text(gate, len(rows) - 0.4, label, color=MUTED, fontsize=8, ha="center")
+    ax.set_yticks(range(len(rows)))
+    ax.set_yticklabels([r["label"] for r in reversed(rows)], fontsize=8)
+    ax.set_xlim(0, 0.32)
+    ax.set_ylim(-0.6, len(rows) - 0.1)
+    ax.set_xlabel("training cost to TF-LGN quality, x TF-LGN, average EN+ID (ESTIMATED)")
+    ax.spines[["top", "right", "left"]].set_visible(False)
+    ax.tick_params(axis="y", length=0)
+    ax.set_title("Counted organization (generic, D1), step by step", fontsize=10, loc="left", color=INK)
+    fig.tight_layout()
+    fig.savefig(HERE / "counted-path.svg", metadata={"Date": None})
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     cost_to_q()
     baseline_history()
-    print("wrote", HERE / "cost-to-q.svg", HERE / "baseline-history.svg")
+    counted_path()
+    print("wrote", HERE / "cost-to-q.svg", HERE / "baseline-history.svg", HERE / "counted-path.svg")

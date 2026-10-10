@@ -98,3 +98,53 @@ Large recall advantages exist only against expensive Transformers. Against the c
 - **Amdahl bound (ESTIMATED).** B1A's training cost splits roughly into shared parts (channel mixing, embeddings, output head), mixer projections, and the attention kernel. A recurrent core that replaced the attention kernel at zero cost would still leave a per-update ratio of 0.55–0.72 against B1A at 4,096 tokens by profiling, and about 0.77–0.87 using the attention share implied by the canonical windowing measurement (I252). Reaching the 0.50 gate by mixer substitution would therefore also need a large update-efficiency advantage. Against B1A, the best measured is about 0.70 (A010), paid for by 1.75× cost per update.
 - **The hybrid family is closed in this regime.** The cheapest hybrid, A025, trades about 35–40% of A010's update advantage for about a quarter of its extra per-update cost, and lands at break-even (0.985). An optimized implementation gave only 3% more.
 - **Mixed-data regime.** With 6% synthetic parity data, A025n is 0.939× B1A. That is below parity but above the frozen 0.90 criterion, and the BPB gap appeared whether or not A025n learned parity (I256). It most likely reflects B1A being disrupted by tokens it cannot model.
+
+## Counted organization (D1)
+
+Target quality `Q_N` = TF-LGN's final quality at 1,500 updates. Metric: bits per token on positions whose 12-token context does not appear in training (the corpus has duplicates; I269, I270). Cost = canonical cost per token × updates to `Q_N`, plus measured counting time. TF-LGN's cost per token is now measured directly in the same session; the bridged estimate used before 2026-10-08 was about 5% low, so earlier ratios were 4–5.5% too favourable (I313). All values below are corrected and ESTIMATED.
+
+### Step by step (average of English and Indonesian)
+
+| Step | Training cost to `Q_N` (× TF-LGN) | Seeds | Evidence |
+|---|---|---|---|
+| Width 192 + counted prior + cache | 0.172 / 0.189 | 2 | I283, I284 |
+| + windowed attention + pointer | 0.128 | 1 | I294 |
+| + trained gate | 0.0995 / 0.101 | 2 | I298, I314 |
+| + training on 1,024-token chunks | 0.083 / 0.077 | 2 | I308, I315 |
+| Width 128 (A039) | **0.0625 / 0.0634** | 2 | I316, I318 |
+| A039, cheaper-inference variant | 0.065 / 0.066 | 2 | I321, I323 |
+| A039, overlapping chunks (phase-robust) | 0.062 | 1 | I331 |
+
+Against B1A trained twice as long, A039 is 0.062× (I318). Width 96 gives 0.063 (no better; I320).
+
+### Per language (I337–I339)
+
+| Measure | Indonesian | English |
+|---|---|---|
+| Best organization vs TF-LGN | 0.032× (A039) | 0.149× (width 192, short context) |
+| A039 vs TF-LGN | 0.032× | target not reached in 1,500 updates |
+| Width 192 windowed (A036) vs TF-LGN | 0.067× | 0.188× |
+
+### Budget ladder against B1A at the same budget (I326, I332, I340)
+
+Independent annealed runs at each budget, B1A width 320.
+
+| Budget | 0.5× | 1× | 2× | 4× |
+|---|---|---|---|---|
+| Average EN+ID | 0.048 | 0.063 | 0.067 | 0.066 |
+| Indonesian | 0.044 | 0.040 | 0.038 | ≤ 0.034 |
+| English | 0.053 | 0.121 | not reached | not reached |
+| English corpus passes | 1.6 | 3.2 | 6.4 | 12.7 |
+
+A fit `L(C) = E + A·C^−γ` with a separate asymptote per arm gives an equivalent-compute multiplier of 14.8–17.9× at B1A's final quality (I334). This is ESTIMATED from a fit, and part of it reflects the capacity limit of a fixed-size opponent: A039 at 4× already passes B1A's fitted asymptote. Within the tested compute range, every other Transformer configuration measured was worse than the B1A width-320 curve (I335). Above 4×, with larger opponents, no claim is made.
+
+### Inference (prefill)
+
+| Configuration | Cost per token × TF-LGN | Evidence |
+|---|---|---|
+| Claim view (more expensive features) | 1.15 | I317 |
+| Cheaper-inference variant, vectorized lookup | 0.48 (0.41× TF-LG, 0.81× B1A) | I328 |
+| Overlapping chunks | 0.49 | I333 |
+
+Measured in interleaved sessions (8 rounds, calibrated each round). Token-by-token decode is not measured. Count tables at 1,500 updates need about 434 MB, about 76× the network weights; pruning singletons saves only 36% of memory at +0.024 bits (I296).
+

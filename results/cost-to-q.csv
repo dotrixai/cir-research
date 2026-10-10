@@ -48,3 +48,11 @@ I248,R80,11,A010,B1A,frontier,1500,1.23,ESTIMATED
 I251,R81,11,A025,B1A,frontier,1500,0.985,ESTIMATED
 I252,R82,11,A025 (optimized),B1A,frontier,1500,0.949,ESTIMATED
 I255,R81,11,A025n (mixed data),B1A (mixed data),frontier,1500,0.939,ESTIMATED
+I316,R136,11,A039 (counted),TF-LGN,D1 macro,1500,0.0625,ESTIMATED
+I318,R139,22,A039 (counted),TF-LGN,D1 macro,1500,0.0634,ESTIMATED
+I338,R158,11,A039 (counted),TF-LGN,D1 Indonesian,1500,0.032,ESTIMATED
+I339,R159,11,counted width 192 short context,TF-LGN,D1 English,1500,0.149,ESTIMATED
+I326,ladder,11,A039 (counted),B1A same budget,D1 macro,750,0.048,ESTIMATED
+I332,ladder,11,A039 (counted),B1A same budget,D1 macro,1500,0.063,ESTIMATED
+I332,ladder,11,A039 (counted),B1A same budget,D1 macro,3000,0.067,ESTIMATED
+I332,ladder,11,A039 (counted),B1A same budget,D1 macro,6000,0.066,ESTIMATED

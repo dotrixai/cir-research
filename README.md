@@ -2,7 +2,7 @@
 
 CIR is an active DotrixAI research program investigating AI architectures and learning systems with lower cost-to-capability than strong Transformer systems.
 
-**Status: Active Research** · Snapshot: 2026-10-05 15:00 UTC · Website: [dotrixai.com/cir](https://dotrixai.com/cir)
+**Status: Active Research** · Snapshot: 2026-10-10 07:47 UTC · Website: [dotrixai.com/cir](https://dotrixai.com/cir)
 
 > This repository documents research in progress. Results are provisional unless marked REPRODUCED or VALIDATED. Candidates and claims may be superseded as stronger baselines and new evidence arrive, and several already have been. It contains research documentation only, not the CIR implementation.
 
@@ -27,18 +27,16 @@ The cheapest fair Transformer known at the time of a claim is a mandatory compar
 
 ## Current research status
 
-Scope of everything below: about 4M parameters (one additional width at about 7M), 4,096-token context, batch 8, at most 1,500 updates (about 49M tokens), English and Indonesian text, one commodity laptop CPU. No GPU results.
+Snapshot 2026-10-10. Dated history: [docs/research-log.md](docs/research-log.md). Scope: networks up to 1.4M parameters (counted organization) and up to about 7M (CIR mixers), 4,096-token context, English and Indonesian text, one commodity laptop CPU. No GPU results.
 
-- **Strongest baseline:** B1A, a Transformer with a single global attention layer. It matches our previous best baseline in BPB at about 0.50× its cost per update. It was found by CIR's own baseline attack, and a windowed variant measured no cheaper to matched quality.
-- **Strongest reproduced candidate:** A010, two delta-rule recurrent mixing layers followed by one full softmax attention layer, trained with Muon. Against earlier Transformers it reaches matched BPB at **0.633–0.643×** (gated local-global) and **0.59–0.63×** (gated full attention) the cost, in two seeds (ESTIMATED). Against B1A it costs **1.23–1.27×**.
-- **Cheapest hybrid (A025, thin recurrent mixers on B1A):** breaks even with B1A at **0.985×** (0.949× with an optimized implementation) and fails both frozen criteria. **The delta-hybrid mixer family is closed for BPB at context ≤ 4,096.**
-- **Analytic bound:** even a free replacement for B1A's attention would leave a per-update cost ratio of about 0.77–0.87 at this context length (ESTIMATED from canonical timings). Mixer substitution cannot reach the 0.50 gate in this regime.
-- **Generic modules:** Engram and static n-gram heads help Transformers as much or more than CIR candidates, so they are neutral under D2.
-- **State tracking, the one structural asymmetry found:** recurrent mixers that allow negative eigenvalues learn parity and extrapolate it; B1A never learns it. Inside the language model this emerged in only **1 of 3 runs**. It is a narrow capability result, and the mechanism is prior art.
-- **Scaling:** three small widths tested; nothing is known above about 7M parameters. Larger runs are beyond the current CPU budget.
-- **Under test now:** R88 (does a stronger parity signal make the capability reliable?) and R89 (does formal-language pre-pretraining save tokens, and differently per organization?).
+- **CIR-specific architectures (D2): objective not reached.** Delta-rule recurrent mixers and their hybrids have no cost advantage over the cheapest fair Transformer (B1A, one global attention layer). The cheapest hybrid breaks even (0.949–0.985×); A010 costs 1.23–1.27×. An analytic bound rules out mixer substitution as a route to 0.50 at this context length. The family is closed for general language modeling at this scale.
+- **Generic counted organization (D1): the main line now.** A small one-attention Transformer combined with counted n-gram statistics, an in-context cache, a longest-match pointer and a tiny trained gate reaches the final quality of a strong Transformer (TF-LGN) at **0.0625–0.0634× its training cost** averaged over English and Indonesian, on two seeds (ESTIMATED). A cheaper-inference variant prefills text at 0.48× TF-LGN's cost.
+- **Per language the picture is uneven.** Indonesian: **0.032×**. English: **0.149×** at best, and the advantage over B1A disappears at 2× and 4× budget, where the small English corpus repeats many times. R161 is testing whether repetition, rather than language, is the cause.
+- **This is not a new method.** The organization matches published prior art (modded-nanogpt PR #380, infini-gram, cache language models). CIR's contribution is matched-quality cost accounting that was attacked, reproduced across seeds and corrected on small hardware.
+- **Capabilities:** the counted organization copies long spans better than TF-LGN (3.1–3.3 vs 2.89 bits) and reaches 0.99 exact recall only with its gate. Grammar, binding, reasoning and coherent generation are not measurable at this scale.
+- **Scaling:** flat average ratio across a 0.5×–4× budget ladder against B1A; nothing is known above 1.4M parameters, about 200M tokens, or opponents larger than width 448.
 
-**Honest summary: no CIR organization has a cost advantage over the cheapest fair Transformer we know. The program objective has not been reached.**
+**Honest summary: the breakthrough gate (≤ 0.10×) is passed only on average and in Indonesian, at small scale, by a generic and previously published organization. It is not established in English, at scale, or for any CIR-specific architecture.**
 
 Details: [docs/current-state.md](docs/current-state.md).
 
@@ -46,20 +44,21 @@ Details: [docs/current-state.md](docs/current-state.md).
 
 | Finding | Status | Interpretation | Main limitation |
 |---|---|---|---|
-| A010 vs gated local-global Transformer: 0.041 lower BPB, cost 0.633–0.643 at final Q | REPRODUCED, CONTESTED | Real advantage over that baseline | Baseline no longer the cheapest; its learning rate was inherited, not screened |
-| A010 vs gated full-attention Transformer: 0.034 lower BPB, cost 0.59–0.63 | REPRODUCED | Holds against the strongest Transformer in quality tested | Full attention is an expensive baseline at this scale |
-| B1A matches local-global BPB (within 0.005) at about 0.50× cost per update | SUPPORTED | Earlier D1 cost ratios used an inefficient baseline | One seed; per-update ratio confirmed in four sessions |
-| A010 vs B1A: BPB cost 1.23–1.27×; tie at equal compute | PROVISIONAL | No BPB cost advantage against the cheapest Transformer | One seed per arm |
-| Associative-recall cost vs cheapest Transformers: 0.74–1.0× | CONTESTED | Marginal; large recall advantages only against expensive Transformers | Depends on quality level and seed |
-| A025 (thin mixers on B1A) vs B1A: BPB cost 0.985 (0.949 optimized) | FALSIFIED as a cost candidate | Hybrid family breaks even with the cheapest Transformer | One seed; this regime only |
-| Parity: negative-eigenvalue mixers learn and extrapolate it; B1A does not | SUPPORTED (synthetic) | A real but narrow expressivity asymmetry | Prior art; in the language model 1 of 3 runs |
-| Static n-gram heads (A019): 0.50 vs D1, 0.84 vs D2 | CONTESTED | Gain comes from a generic, prior-art module | One seed |
-| Recall cost 0.36–0.69 | SUPERSEDED | Estimator was biased toward CIR | Corrected method in use |
-| Pure delta-rule recurrence at 0.587 | SUPERSEDED | Held only under AdamW; reversed under Muon | Kept for history |
+| Counted organization A039 vs TF-LGN, average EN+ID: 0.0625 / 0.0634× | REPRODUCED | Cheapest organization measured; passes 0.10 on average | Generic, prior art; average carried by Indonesian |
+| Same, per language: ID 0.032×, EN 0.149× at best (A039 does not reach EN target) | SUPPORTED | Breakthrough level in Indonesian, industry level in English | English from one run; repetition differs by language |
+| English vs B1A at 2× and 4× budget: target not reached | CONTESTED | English gain fades as data repeats | Cause under test (R161) |
+| Inference prefill 0.48–0.49× TF-LGN | REPRODUCED | Cheaper to read text, not only to train | Decode unmeasured; tables about 434 MB |
+| Unseen Indonesian Wikipedia: 0.053 / 0.055× | REPRODUCED | Advantage survives text outside training | Same language; gate needs in-domain text |
+| A025 (thin hybrid) vs B1A: 0.985 (0.949 optimized) | FALSIFIED as a cost candidate | CIR hybrid family breaks even with the cheapest Transformer | One seed; this regime |
+| A010 vs B1A: BPB cost 1.23–1.27×; tie at equal compute | PROVISIONAL | No CIR-specific BPB advantage | One seed per arm |
+| A010 vs gated local-global Transformer: 0.633–0.643 | REPRODUCED, CONTESTED | Real advantage over that baseline only | Baseline not the cheapest |
+| State tracking: CIR recurrence learns parity and A5; cost vs Transformer + chain-of-thought | FALSIFIED (cost) | Capability real, cost advantage not | Tiny models, synthetic tasks |
+| Formal-language pre-pretraining at 4M | FALSIFIED | Hurts both organizations, CIR more | Published gains are at 160M+ |
+| Ratios against TF-LGN before 2026-10-08 | SUPERSEDED | Bridged cost estimate was about 5% low | All figures corrected |
 
 Full table: [results/current-evidence.md](results/current-evidence.md) · machine-readable: [results/evidence-table.csv](results/evidence-table.csv).
 
-![Cost to reach matched quality, A010 and A019, against a standard Transformer and a Transformer with the same n-gram heads](figures/cost-to-q.svg)
+![Counted organization: training cost to TF-LGN quality, step by step, averaged over English and Indonesian](figures/counted-path.svg)
 
 ## Research principles
 
@@ -76,7 +75,9 @@ Full table: [results/current-evidence.md](results/current-evidence.md) · machin
 ## What has not been proven
 
 - Any behavior above about 7M parameters, beyond 1,500 updates, or beyond 4,096 tokens of context in the current candidate family.
-- Any cost advantage over the cheapest fair Transformer known (B1A).
+- Any cost advantage of a CIR-specific architecture over the cheapest fair Transformer known (B1A).
+- A cost advantage of the counted organization in English, above about 1.4M parameters, or above 4× budget.
+- Token-by-token decode cost, and memory-constrained deployment.
 - Reliable emergence of state tracking inside a language model, or any language benefit from it.
 - Reasoning, grammar, binding, robustness or coherent generation parity; these are not yet measurable at this scale.
 - Any advantage on GPUs, other CPUs or other hardware.
@@ -91,6 +92,7 @@ Full table: [results/current-evidence.md](results/current-evidence.md) · machin
 | [docs/objective.md](docs/objective.md) | Objective, gates, denominators, number labels |
 | [docs/methodology.md](docs/methodology.md) | Public summary of the research method |
 | [docs/current-state.md](docs/current-state.md) | Dated snapshot of the current state |
+| [docs/research-log.md](docs/research-log.md) | Every public snapshot, newest first |
 | [docs/architecture.md](docs/architecture.md) | High-level description of candidates and baselines |
 | [docs/cost-to-capability.md](docs/cost-to-capability.md) | Cost decomposition and cost-to-Q curves |
 | [docs/capabilities.md](docs/capabilities.md) | Capability probes and their status |

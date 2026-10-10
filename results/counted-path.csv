@@ -1,0 +1,6 @@
+step,label,low,high,seeds,evidence
+1,Width 192 + counted prior + cache,0.172,0.189,2,I283; I284
+2,+ windowed attention + pointer,0.128,0.128,1,I294
+3,+ trained gate,0.0995,0.101,2,I298; I314
+4,+ training on 1024-token chunks,0.077,0.083,2,I308; I315
+5,Width 128 (A039),0.0625,0.0634,2,I316; I318

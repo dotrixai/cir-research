@@ -1,8 +1,22 @@
 # Current evidence
 
-Snapshot: 2026-10-05 15:00 UTC. Regime unless stated: about 4M effective parameters, 3 layers, 4,096-token context, batch 8, up to 1,500 updates (about 49M tokens), English and Indonesian text, one laptop CPU. Status vocabulary: [docs/methodology.md](../docs/methodology.md#12-epistemic-status). Machine-readable: [evidence-table.csv](evidence-table.csv).
+Snapshot: 2026-10-10 07:47 UTC. Regime unless stated: 3 layers, 4,096-token context, batch 8, up to 1,500 updates (about 49M tokens), English and Indonesian text, one laptop CPU. Counted organization: networks of 0.82–1.43M parameters, quality measured as bits per token on positions with unseen 12-token context. CIR mixers: about 4M effective parameters. Status vocabulary: [docs/methodology.md](../docs/methodology.md#12-epistemic-status). Machine-readable: [evidence-table.csv](evidence-table.csv).
 
-## Standing results
+## Counted organization (generic, D1)
+
+| ID | Finding | Value | Label | Seeds | Status | Interpretation | Main limitation |
+|---|---|---|---|---|---|---|---|
+| I316, I318 | A039 vs TF-LGN, average EN+ID | training cost to `Q_N` 0.0625 / 0.0634 | ESTIMATED | 2 | REPRODUCED | Cheapest organization measured; passes 0.10 on average | Generic, prior art (modded-nanogpt PR #380) |
+| I338, I339 | Per language | Indonesian 0.032; English 0.149 at best; A039 does not reach English `Q_N` | ESTIMATED | 1 | SUPPORTED | Breakthrough level in Indonesian only | Repetition differs by language |
+| I340 | English vs B1A across budgets | 0.053 / 0.121 / not reached / not reached (0.5×–4×) | ESTIMATED | 1 | CONTESTED | English gain fades as data repeats | Cause under test (R161) |
+| I326, I332 | Average vs B1A across budgets | 0.048 / 0.063 / 0.067 / 0.066 | ESTIMATED | 1 | SUPPORTED | Flat across an eightfold budget range | Fixed-size opponent |
+| I334 | Ladder fit | equivalent-compute multiplier 14.8–17.9× | ESTIMATED | 1 | PROVISIONAL | Large within the tested range | Partly the opponent's capacity limit |
+| I321, I323, I328 | Cheaper-inference variant | training 0.065 / 0.066; prefill 0.48× TF-LGN | ESTIMATED / MEASURED | 2 | REPRODUCED | Cheaper to read text too | Decode unmeasured; tables about 434 MB |
+| I324, I325 | Unseen Indonesian Wikipedia | 0.053 / 0.055 | ESTIMATED | 2 | REPRODUCED | Survives text outside training | Gate tuned in-domain |
+| I299, I309 | Copy and recall | copy 3.1–3.3 bits (TF-LGN 2.89); recall 0.99 with gate | MEASURED | 1–2 | SUPPORTED | Counted pointer copies and looks up well | Single-token lookup |
+| I291, I293, I312, I335 | Frontier attacks | four opponent routes all cost more | ESTIMATED | 1 | SUPPORTED (STRONG for `Q_N`) | Claim held at this scale | Unattacked above 4× budget |
+
+## CIR-specific organizations and earlier results
 
 | ID | Finding | Value | Label | Seeds | Status | Interpretation | Main limitation |
 |---|---|---|---|---|---|---|---|
@@ -34,18 +48,21 @@ Snapshot: 2026-10-05 15:00 UTC. Regime unless stated: about 4M effective paramet
 | I222 | A019 at 0.530 at intermediate Q | Final-Q and D2 comparisons (I240) | SUPERSEDED |
 | I241 | Recall cost 0.36–0.69 against all tested Transformers | Biased estimator (I245) | SUPERSEDED |
 | I247 | Windowed B1A 10–30% cheaper per update (estimate) | Measured 8.6% (I252) | SUPERSEDED |
+| I283, I284 | Counted organization 0.163 / 0.179 | Bridged TF-LGN cost, corrected to 0.172 / 0.189 (I313) | SUPERSEDED |
+| I330 | Chunked inference without overlap | Phase weak spot; fixed by overlap (I331) | SUPERSEDED |
+| I337 | Macro-only claims | Hid the English gap (I338) | REVOKED |
 | I183, I186 | Early per-update ratios | Uncontrolled core placement | QUARANTINED |
 
 ## Under evaluation
 
 | ID | Question | State |
 |---|---|---|
-| R88 | With 15% parity data (2.5×), does A025n learn parity on the seed that failed, while B1A still does not? | Training |
-| R89 | Does formal-language pre-pretraining (k-Shuffle Dyck, 100 updates) reduce total cost to Q, and differently for B1A and A025? | Frozen, queued |
+| R161 | With the Indonesian corpus cut to the English size, does the Indonesian advantage collapse? | Training |
 
-Closed since the previous snapshot: R81 and R82 (hybrid family falsified as a cost candidate), H032 (parity supported), R83–R87 (state tracking in the LM: 1 of 3). Cancelled: R74.
+Closed since the 2026-10-05 snapshot: R88 (parity emerges with 15% signal), R89 (formal-language pre-pretraining hurts at 4M), R90–R97 (state-tracking capability real, cost falsified), R98–R160 (counted organization, see above).
 
 ## Figures
 
-- [../figures/cost-to-q.svg](../figures/cost-to-q.svg): cost to matched Q, D1 and D2, one session.
+- [../figures/counted-path.svg](../figures/counted-path.svg): counted organization, training cost to `Q_N` step by step.
+- [../figures/cost-to-q.svg](../figures/cost-to-q.svg): CIR mixers, cost to matched Q, D1 and D2, one session.
 - [../figures/baseline-history.svg](../figures/baseline-history.svg): CIR cost ratio as the baseline was strengthened, ending with A025 against B1A.

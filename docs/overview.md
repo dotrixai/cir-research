@@ -16,12 +16,18 @@ CIR is DotrixAI's first major research program. It asks one question: can a diff
 
 ## Where the program stands
 
-At the time of the [current snapshot](current-state.md), the strongest reproduced CIR candidate (A010) beats several strong Transformer baselines on cost to matched BPB, in two seeds. CIR's own baseline attack then found a cheaper Transformer (B1A) against which that advantage disappears, and the cheapest hybrid only breaks even with it. The program objective has not been reached. The one structural asymmetry found so far is a narrow capability (state tracking), which emerges unreliably inside a language model. Current work tests whether a stronger signal or formal-language pre-pretraining changes that.
+At the time of the [current snapshot](current-state.md):
+
+- **CIR-specific architectures** (delta-rule recurrent mixers and hybrids) have no cost advantage over the cheapest fair Transformer. That family is closed for general language modeling at this scale.
+- **A generic organization** (a small Transformer combined with counted n-gram statistics, a cache, a pointer and a trained gate) reaches a strong Transformer's quality at about 0.06× its training cost on average, but 0.032× in Indonesian versus 0.149× at best in English. It is prior art; CIR's contribution is the attacked cost accounting.
+- The program objective, a CIR-specific structural advantage that survives scale, has not been reached.
+
+Every earlier public snapshot is kept in [research-log.md](research-log.md).
 
 ## How to read this repository
 
 1. [objective.md](objective.md): what is being minimized and how numbers are labeled.
-2. [current-state.md](current-state.md): the dated snapshot.
+2. [current-state.md](current-state.md): the dated snapshot, and [research-log.md](research-log.md) for its history.
 3. [../results/current-evidence.md](../results/current-evidence.md): the evidence table.
 4. [baseline-adversary.md](baseline-adversary.md) and [falsified-and-superseded.md](falsified-and-superseded.md): how claims changed.
 5. [limitations.md](limitations.md): what the results cannot tell you.

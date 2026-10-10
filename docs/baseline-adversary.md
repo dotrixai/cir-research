@@ -15,6 +15,12 @@ CIR deliberately strengthens the Transformer it competes against. A dedicated la
 | 4 Oct | **Equal-compute attack:** B1A widened to A010's cost per update | BPB tie (0.0023). Recall slightly better for A010. | I244 |
 | 4 Oct | **Estimator audit** (recall cost) | Comparator was charged its full budget although its recall had plateaued. Corrected recall advantage vs cheapest Transformers: 0.74–1.0. **Capability claim weakened to marginal.** | I245 |
 | 4 Oct | **Windowed B1A** (probe, then canonical timing) | Windowing B1A's attention to 512 costs up to 0.010 BPB and saves only 8.6% per update on this CPU (estimated beforehand at 10–30%). Not cheaper to matched quality, so **B1A stays the frontier**. | I247, I252 |
+| 6 Oct | **Transformer with chain-of-thought** on synthetic state tracking | A one-layer Transformer with written intermediate steps reached the A5 target more cheaply than CIR recurrence. **State-tracking cost claim withdrawn.** | I267, I268 |
+| 7–8 Oct | **Counted claim vs TF-LGN with n-gram heads, larger Transformers (TF-LG, A010 at width 448), and B1A trained twice as long** | All cost more to reach `Q_N` (0.080–0.111 for the under-trained larger opponents). **Claim held.** | I291, I293 |
+| 8 Oct | **Same short-context trick for the Transformer** | TF-LGN trained on 1,024-token chunks lost 0.042 bits and never reached `Q_N`. **Claim held.** | I312 |
+| 8 Oct | **Direct cost measurement of TF-LGN** | The bridged estimate was about 5% low; every ratio became 4–5.5% less favourable. **Claim corrected.** | I313 |
+| 10 Oct | **Frontier envelope check** | Within the tested compute range, every Transformer configuration measured is worse than B1A width 320. Above 4× budget and for larger B1A: UNATTACKED. | I335 |
+| 10 Oct | **Per-language scoring and longer budgets** | English advantage absent at 2× and 4× budget. **Claim narrowed** to Indonesian and the average. | I338, I340 |
 | 4 Oct | **Cheapest hybrid against B1A** (R81, R82) | A025, B1A plus thin recurrent mixers, breaks even (0.985×; 0.949× with an optimized implementation). **Delta-hybrid family closed** at context ≤ 4,096. | I251, I252 |
 
 ![CIR cost ratio to the baseline's final BPB as the baseline was strengthened; the last row is the cheapest hybrid A025 against B1A](../figures/baseline-history.svg)

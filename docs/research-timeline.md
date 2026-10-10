@@ -24,3 +24,10 @@ Major turning points only. All dates 2026 (UTC). Earlier work (before 24 Septemb
 | 4 Oct | **State tracking (synthetic):** negative-eigenvalue recurrence learns and extrapolates parity; tiny Transformers do not | Narrow capability asymmetry supported; mechanism is prior art |
 | 4–5 Oct | **State tracking inside the LM:** learned in 1 of 3 runs; B1A never; mixed-data BPB advantage replicates regardless | Capability claim downgraded to "can emerge, not reliably" |
 | 5 Oct | Formal-language pre-pretraining proposed as a token-saving lever that may depend on organization (R89, H033) | New direction under test |
+| 5 Oct | **Stronger parity signal (15%)**: A025n learns parity on the seed that failed; B1A does not. Formal-language pre-pretraining hurts at 4M | Parity in the LM supported; H033 not supported |
+| 6 Oct | Two delta steps per token solve S3 and A5 in tiny models; a one-layer Transformer with chain-of-thought is cheaper | **State-tracking cost claim falsified**; capability stands |
+| 6 Oct | **Counted n-gram prior** on exactly the training tokens helps every architecture; masked metric adopted | Generic lever measured under D1 |
+| 7 Oct | Small Transformer + counted prior + cache: 0.172–0.189× TF-LGN (corrected), two seeds | 0.20 gate passed under D1; prior art acknowledged |
+| 8 Oct | Trained gate 0.0995–0.101×; chunked training 0.077–0.083×; width 128 (A039) **0.0625–0.0634×**; TF-LGN cost correction (~5%) | 0.10 gate passed on average under D1 |
+| 9 Oct | Inference 0.48×; budget ladder flat (0.048–0.067); unseen Indonesian Wikipedia 0.053–0.055×; phase weak spot found via an outside tip and fixed | Claim extended to inference and robustness, still averaged |
+| 10 Oct | **Per-language correction:** Indonesian 0.032×, English 0.149× at best; English advantage absent at 2× and 4× budget | Claims reported per language; R161 tests data repetition |
