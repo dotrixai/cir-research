@@ -1,45 +1,42 @@
 # Limitations
 
-What the current results cannot tell you.
+What the current results cannot tell you. Updated 2026-10-16; the primary lane has been paused since 15 October ([direction-change.md](direction-change.md)).
 
 ## Scope
 
-- **Small models.** Counted organization: networks of 0.57–1.43M parameters. CIR mixers: about 4M effective parameters, at most about 7M. Only 3 layers.
-- **Short training.** At most 1,500 updates (about 49M tokens), below compute-optimal budgets; cosine schedule fixed to that horizon. Behavior beyond it is unknown.
-- **One context length.** Main results at 4,096 tokens; one measurement at 8,192.
-- **One batch size.** Batch 8. Recurrent cost per update is strongly batch-dependent.
-- **One machine.** One commodity laptop CPU, two pinned performance cores, PyTorch eager mode. No GPU results. CPU cost estimates may not transfer to GPU or cluster training.
-- **Narrow data.** English and Indonesian text, BPE vocabulary of 2,048 (Indonesian fragments into about 3.7 tokens per word). Quality is macro-averaged BPB, half-weighted on a small Indonesian evaluation set.
+- **Small models.** Laptop phase: counted organization 0.57–3M parameters, CIR mixers about 4M effective (at most about 7M), 3 layers. GPU phase: dense Transformers of 4.7–18.9M non-embedding parameters, and the strong recipe at 20M and 85M. Nothing larger was run.
+- **Short training.** Laptop runs up to 1,500 updates (about 49M tokens), occasionally 3,000–6,000. GPU runs one epoch of 0.38B tokens. Behavior with more data, multiple epochs at scale or longer schedules is unknown.
+- **Few hardware types.** One commodity laptop CPU (two pinned cores, PyTorch eager mode, plus a compiled C runtime for decoding) and one rented A100 GPU. Kernels mattered: FLOP savings did not carry over into time with the implementations available.
+- **Narrow data.** English and Indonesian. Laptop: WikiText-2 or WikiText-103, Indonesian Wikipedia, short stories, BPE vocabulary 2,048. GPU: FineWeb-Edu and FineWeb-2 web text, BPE vocabulary 32,768.
+- **One context regime per phase.** Laptop: 4,096 tokens (training on 1,024-token chunks for the counted organization). GPU: 1,024 tokens.
 
 ## Evidence quality
 
-- **Seeds.** Only the main A010 comparisons have two seeds. Results against the current cheapest baseline (B1A) use one seed.
-- **Session-to-session variance.** Per-update cost ratios for the same pair vary by about ±3% between timing sessions.
-- **Capability instruments.** Grammar, binding, reasoning and generation cannot be measured reliably at this scale. Capability probes are exploratory and use modest sample sizes.
-- **Learning rates.** Screened on a two-point grid; one earlier baseline used an inherited learning rate.
-- **Cost accounting.** Cost is training time on the canonical instrument. Energy, memory, data and infrastructure costs are not yet separately accounted.
+- **Seeds.** GPU results use one seed. Laptop results use one or two.
+- **Session-to-session variance.** Per-update cost ratios for the same pair vary by about ±3% between laptop timing sessions; GPU time per update was anchored within each session.
+- **Capability instruments.** At ≤ 4M parameters grammar, binding, reasoning and generation cannot be measured reliably. BLiMP was used as a guard on the GPU and varies by about ±3 points between identical runs.
+- **Withheld results.** Exact outcomes of R161–R219 are withheld for now, so readers cannot check those conclusions against numbers yet ([publication-policy.md](publication-policy.md#withheld-results)).
+- **Partial opponents.** No complete FAIR-OPT was built at any scale. The opponents used are dated partial versions.
 
 ## Interpretation
 
-- **Baselines keep improving.** Several results have already been weakened or reversed by stronger baselines, and further cheaper Transformers may exist.
-- **Generic modules.** Results without generic modules (Engram, n-gram heads) do not hold once both sides use them.
-- **Shallow-model regime.** Three-layer models are the regime most favorable to lookup modules, which may distort the relative value of recurrence and modules.
-- **Prior art.** All components have close published equivalents. No architectural novelty is claimed.
-- **Scale.** Nothing here establishes behavior at 100M+ parameters, and projections suggest mixer-substitution savings shrink with width.
+- **Baselines keep improving.** Most CIR results were weakened or reversed by stronger baselines; the strongest published recipes moved the bar further than any candidate moved.
+- **Generic modules.** Results that depend on n-gram memories, caches or input memories do not hold once the opponent uses the same published modules.
+- **Shallow-model regime.** Three-layer laptop models are the regime most favorable to lookup modules; the GPU point confirmed that their value shrinks with scale.
+- **Prior art.** Every component of the best system, and the combination, has close published equivalents. No architectural novelty is claimed.
+- **Scale.** Nothing here establishes behavior at 100M+ parameters.
 
 ## Counted organization specifically
 
-- **Language and repetition.** The English corpus (3.86M tokens) repeats quickly; the English advantage fades with budget. Whether this is repetition or language is open (R161).
-- **Deployment.** Decode cost unmeasured; count tables about 434 MB; the gate needs about 4,000 tokens of in-domain text and does not transfer across languages.
-- **Metric.** Bits per token on positions whose 12-token context is unseen in training. This removes credit for duplicates but differs from plain BPB.
-- **Prior art.** The organization is known; no novelty is claimed.
-- **D2.** A Transformer given the same counted tools has not been compared; no D2 claim is made.
+- **Repetition and evaluation sets.** The earlier English–Indonesian gap came mainly from data repetition and from evaluation sets with different relations to the training text, not from language.
+- **Tokenizer.** The laptop tokenizer was trained with about 1.6% Indonesian text; per-token ratios across languages are tokenizer-specific.
+- **Metric.** Bits per token on positions whose 12-token context is unseen in training. This removes credit for duplicates but differs from plain BPB, and it is a partial overlap control, not a full contamination proof.
+- **Memory.** Count tables need hundreds of megabytes at laptop scale (about 434 MB) and far more for large corpora.
+- **The gate** needs a few thousand tokens of in-domain text and does not transfer across languages.
 
 ## Open questions
 
-1. Is the counted organization's advantage about data repetition or about language? (R161)
-2. Does English reach ≤ 0.10× with a larger corpus or a larger network?
-3. Does the advantage hold against larger Transformers above 4× budget, and at 30M+ parameters?
-4. What are decode cost and memory-constrained cost?
-5. Is there any CIR-specific primitive that reduces dense computation for language quality (D2)? None is known.
-6. Can state tracking be made to matter for language at any affordable scale?
+1. Does any training-compute lever keep or grow its advantage against a complete FAIR-OPT as scale grows (for example fine-grained mixtures of experts with efficient dispatch)? Not tested.
+2. How do the GPU-phase conclusions hold across seeds and at 100M+ parameters? Not tested.
+3. Can capability beyond predictive quality (grammar, binding, reasoning) be matched at lower training compute? Not measurable at the scales run.
+4. Is there any CIR-original primitive that reduces training compute? None is known; credence about 3%.

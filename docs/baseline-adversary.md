@@ -1,6 +1,6 @@
 # Baseline adversary
 
-CIR deliberately strengthens the Transformer it competes against. A dedicated lane tries to make the Transformer win, using any fair, generic improvement. Each upgrade below changed or removed a CIR claim. This history is the main reason to trust the claims that remain, and the main reason so few remain.
+CIR deliberately strengthens the Transformer it competes against. A dedicated lane tries to make the Transformer win, using any fair, generic improvement. Each upgrade below changed or removed a CIR claim. This history is the main reason to trust the claims that remain, and the main reason so few remain. Rows from 13 October onward are summarized; exact outcomes of R161–R219 are withheld ([publication-policy.md](publication-policy.md#withheld-results)).
 
 | Date (2026) | Baseline upgrade | Effect on the CIR claim | Evidence |
 |---|---|---|---|
@@ -22,6 +22,10 @@ CIR deliberately strengthens the Transformer it competes against. A dedicated la
 | 10 Oct | **Frontier envelope check** | Within the tested compute range, every Transformer configuration measured is worse than B1A width 320. Above 4× budget and for larger B1A: UNATTACKED. | I335 |
 | 10 Oct | **Per-language scoring and longer budgets** | English advantage absent at 2× and 4× budget. **Claim narrowed** to Indonesian and the average. | I338, I340 |
 | 4 Oct | **Cheapest hybrid against B1A** (R81, R82) | A025, B1A plus thin recurrent mixers, breaks even (0.985×; 0.949× with an optimized implementation). **Delta-hybrid family closed** at context ≤ 4,096. | I251, I252 |
+| 13 Oct | **Partial optimized opponents (partial FAIR-OPT):** the same networks plus published n-gram interpolation, with or without a published input memory | The best laptop-scale system (A051) is at 0.26–0.54 at ≤ 4M. A prior-art check finds every A051 component, and the combination, in published work. **Claim narrowed; a complete FAIR-OPT is expected near 1 (hypothesis).** | I399 |
+| 14 Oct | **Scale:** 4.7–18.9M on one A100, against published n-gram interpolation | The counted organization is at 0.51–0.57 on Wikipedia text and about 1.0 on web text like the training data; in-window copying carries all of the rest. **Claim lost on in-distribution text at this scale.** | I404 |
+| 14 Oct | **A dated strong recipe (FO-L1)** at 20M | Needs about 0.58× the time and 0.43× the FLOPs of plain Transformers at matched quality. Five candidates screened against it; none reached 0.75. **Every candidate lost.** | I406 |
+| 15 Oct | **The same recipe at 85M (dense85)** | Reference for a gated delta hybrid and a mixture of experts at 85M; both stayed far from 0.75 (outcomes withheld). **Candidates lost.** | I413, I414 |
 
 ![CIR cost ratio to the baseline's final BPB as the baseline was strengthened; the last row is the cheapest hybrid A025 against B1A](../figures/baseline-history.svg)
 
@@ -34,3 +38,6 @@ Values come from different cost sessions and are ESTIMATED; each is comparable o
 - Every cost claim must survive a "remove the mixing layers" attack and an equal-compute attack.
 - Claims are reported under D1 and D2 side by side.
 - Literature is checked before running expensive attacks that ask whether a baseline is a small-scale artifact (B1A's legitimacy was checked against published work on attention-sparse Transformers).
+- Since 12 October every claim names the strongest optimized Transformer system (FAIR-OPT) as its primary denominator; D1 and D2 are diagnostic.
+- Before a result is promoted, an opponent is built from the published parts it uses (a partial FAIR-OPT).
+- Screening decisions use points at or beyond half an epoch, because early advantages of count, copy and recurrent channels faded before a fifth of an epoch.

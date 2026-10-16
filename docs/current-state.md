@@ -1,101 +1,87 @@
 # Current state
 
-**Snapshot:** 2026-10-10 07:47 UTC (previous snapshots: 2026-10-05 15:00 UTC, 2026-10-04 07:15 UTC; see [research-log.md](research-log.md))
+**Snapshot:** 2026-10-16 13:00 UTC (previous snapshots: 2026-10-10 07:47 UTC, 2026-10-05 15:00 UTC, 2026-10-04 07:15 UTC; see [research-log.md](research-log.md))
 
 > **This document reflects an evolving research program and may change as new experiments strengthen or falsify current hypotheses.**
 
+## Status
+
+- **The primary research lane is paused** since 2026-10-15 13:53 UTC, by decision of the owner. No experiment is running and none is queued.
+- **Why:** the primary target was not reached, and the routes still open need far more compute than the program has. The full reasoning is in [direction-change.md](direction-change.md).
+- **New direction:** DotrixAI is turning the CIR record into research tasks for AI research agents. A first sample exists and is not public.
+- **The charter is unchanged** (v1.1 of 12 October 2026). Whether CIR's long-term objective changes is an open owner decision.
+- **Withheld:** exact outcomes of experiments R161–R219 (10–15 Oct) are withheld for now, because they are answer keys of unpublished forecasting tasks. This snapshot gives conclusions with evidence IDs and a few headline values ([publication-policy.md](publication-policy.md#withheld-results)).
+
 ## Summary
 
-- **CIR-specific architectures (D2): objective not reached.** The delta-rule recurrent mixers and their hybrids have no cost advantage over the cheapest fair Transformer (B1A). The cheapest hybrid breaks even (0.949–0.985×). An analytic bound rules out mixer substitution as a route to the 0.50 gate at context ≤ 4,096. This family is closed for general language modeling at this scale.
-- **A generic organization (D1) is now the main line.** A small one-attention Transformer combined with counted n-gram statistics, an in-context cache, a longest-match pointer and a tiny trained gate reaches the final quality of a strong Transformer (TF-LGN) at **0.0625–0.0634× its training cost**, averaged over English and Indonesian, on two seeds (ESTIMATED).
-- **The average hides a large language gap.** Indonesian: **0.032×**. English: the cheapest configuration does not reach TF-LGN quality in its budget; the best English configuration reaches **0.149×** (one evaluation run). Against B1A at equal budget, the English advantage fades as the small English corpus repeats.
-- **This is not a new method.** The organization matches published prior art, including modded-nanogpt PR #380. What CIR contributes is matched-quality cost accounting that was attacked, reproduced and corrected on small hardware.
-- **Active:** R161 tests whether data repetition, rather than language, explains the gap.
+- **Primary objective: not reached.** No candidate reached the signal gate (≤ 0.75) in training compute to matched quality against a strong published recipe at 20M or 85M parameters [I406, I410, I412–I414].
+- **The best laptop-scale system is generic and published.** A051 (a small one-attention Transformer, a hashed n-gram input memory, counted n-gram tables, a cache, a pointer and a learned gate) reaches a plain dense Transformer's quality at 0.038× (English) and 0.055× (Indonesian Wikipedia) of its training cost (ESTIMATED, diagnostic). Against partial optimized opponents built from the same published parts the ratio is 0.26–0.54 (ESTIMATED) [I370, I396, I399]. Every component, and the combination, has prior art.
+- **The counted organization did not survive the first scale-up.** At 4.7–18.9M parameters on one A100 its edge over published n-gram interpolation is 0.51–0.57 on Wikipedia text and about 1.0 on web text like the training data; in-window copying carries all of what remains [I404].
+- **Strong recipes move the bar.** A published small-model recipe needs about 0.58× the time (MEASURED) and 0.43× the FLOPs (ESTIMATED) of plain Transformers at matched quality at 20M [I406].
+- **Advantages faded with scale and training,** and FLOP savings did not become time savings with the kernels we had [I406, I410, I412–I414].
+- **No original lever.** Five first-principles cycles found none; the stop rule for laptop-scale search fired on 13 October [I400–I403].
 
-## Experimental regime
+## Experimental regimes
 
-| Item | Value |
-|---|---|
-| Networks (counted organization) | one-attention Transformer (B1A family), width 128 (0.82M parameters) or 192 (1.43M) |
-| Networks (CIR mixers, earlier phase) | about 3.94M effective parameters (width 320); up to about 7M (width 448) |
-| Context | 4,096 tokens; the cheapest configuration trains on 1,024-token chunks |
-| Data | English 3.86M tokens, Indonesian 31.2M tokens, short stories; BPE vocabulary of 2,048 |
-| Budget | 1,500 updates (batch 8, 32,768 tokens per update) at 1×; ladder from 0.5× to 4× |
-| Quality metric (counted phase) | bits per token on positions whose 12-token context does not appear in training (the training data contains duplicates) |
-| Hardware | one commodity laptop CPU (Intel Core i5-13420H), two pinned performance cores; no GPU |
-| Seeds | two for the main counted results; one for per-language and ladder results |
+| Item | Laptop phase (to 13 Oct) | GPU phase (14–15 Oct) |
+|---|---|---|
+| Hardware | one laptop CPU (Intel Core i5-13420H), two pinned performance cores | one rented NVIDIA A100 (40 GB) |
+| Networks | 0.8–3M parameters (counted organization); CIR mixers up to about 7M earlier | dense Transformers of 4.7–18.9M non-embedding parameters; the strong recipe at 20M and 85M |
+| Data | English WikiText-2 (3.86M tokens) or WikiText-103 (191M tokens, seen less than once); Indonesian Wikipedia (31.2M); short stories | one epoch of 0.38B tokens of English (FineWeb-Edu) and Indonesian (FineWeb-2) web text |
+| Tokenizer | BPE, vocabulary 2,048 | BPE, vocabulary 32,768 |
+| Quality | bits per token on positions whose 12-token context does not occur in training | the same masked metric (14 Oct); bits per byte on four core evaluation sets (15 Oct); BLiMP as a grammar guard |
+| Seeds | one or two | one |
 
-## Baselines
+## Comparators
 
 | Name | Role |
 |---|---|
-| **TF-LGN** | gated local-global Transformer with n-gram heads; its final quality defines the target `Q_N`. Its cost per token is now measured directly (I313) |
-| **B1A** (width 320) | the cheapest fair Transformer found; used for equal-budget comparisons and as the frontier for CIR mixers |
+| FAIR-OPT | the strongest optimized Transformer system for matched quality; the primary denominator since 12 Oct. Not fully built at any scale |
+| FO-L1 | a dated strong small-model recipe at 20M (dense core, hashed n-gram input memory, value embeddings, skips, softcap, warmup-stable-decay); a partial FAIR-OPT and the comparator of the 14–15 Oct screens |
+| dense85 | the same recipe at 85M (width 768, 12 layers) |
+| FO-2-lite, FO-2+3-lite | partial optimized opponents at ≤ 4M: the same networks plus published n-gram interpolation, with or without a published input memory |
+| TF-LGN, B1A | the laptop comparators through 10 Oct; now diagnostic |
 
-Baseline frontier status for the counted claim: STRONG for `Q_N` (four opponent routes attacked: n-gram heads, larger Transformers up to width 448, twice the training, and the same short-context training). UNATTACKED above 4× budget and for B1A larger than width 320.
+## Results since 10 October
 
-## Counted organization: results
+Exact values are withheld unless listed (see Status).
 
-| Measure | Value | Label | Seeds | Status |
+| Question | Conclusion | Value | Label | Evidence |
 |---|---|---|---|---|
-| Training cost to `Q_N`, average EN+ID, A039 (width 128) | 0.0625 / 0.0634× TF-LGN | ESTIMATED | 2 | REPRODUCED |
-| Same, width 192 | 0.083 / 0.077× | ESTIMATED | 2 | REPRODUCED |
-| Indonesian, best configuration | 0.032× | ESTIMATED | 1 | SUPPORTED |
-| English, best configuration (width 192, short context) | 0.149× | ESTIMATED | 1 | SUPPORTED |
-| English, A039 | does not reach `Q_N` in 1,500 updates | MEASURED | 1 | SUPPORTED |
-| Cheaper-inference variant: training / prefill inference | 0.065–0.066× / 0.48× TF-LGN | ESTIMATED / MEASURED | 2 | REPRODUCED |
-| Phase-robust variant (overlapping chunks) | training 0.062×, inference 0.49× | ESTIMATED / MEASURED | 1 | PROVISIONAL |
-| Budget ladder vs B1A, same budget, average | 0.048 / 0.063 / 0.067 / 0.066 at 0.5× / 1× / 2× / 4× | ESTIMATED | 1 | SUPPORTED |
-| Same, per language | ID 0.044 / 0.040 / 0.038 / ≤ 0.034; EN 0.053 / 0.121 / not reached / not reached | ESTIMATED | 1 | CONTESTED for EN |
-| Unseen text (Indonesian Wikipedia) | 0.053 / 0.055× TF-LGN | ESTIMATED | 2 | REPRODUCED |
-| Long copy gain | 3.1–3.3 bits (TF-LGN 2.89) | MEASURED | 1–2 | SUPPORTED |
-| Exact single-token recall | 0.99+, only with the trained gate | MEASURED | 1–2 | SUPPORTED |
-| Count table memory | about 434 MB (about 76× the network weights) | MEASURED | 1 | — |
-| Token-by-token decode cost | not measured | — | — | OPEN |
-
-## CIR-specific organizations against B1A
-
-| Organization | Cost to B1A's BPB | Status |
-|---|---|---|
-| A010 (two delta-rule layers + one softmax layer) | 1.23–1.27× | PROVISIONAL |
-| A025 (B1A + thin delta mixers) | 0.985× (0.949× optimized) | FALSIFIED against frozen criteria; family closed |
-| A025n (negative-eigenvalue variant) on text mixed with parity data | 0.939× | PROVISIONAL; below the frozen 0.90 criterion |
-
-State tracking: negative-eigenvalue recurrence learns parity inside the language model with a strong enough signal (15% of data); B1A never does. A one-layer Transformer with chain-of-thought reaches a harder permutation target more cheaply than CIR recurrence, so the state-tracking **cost** claim is falsified (I267–I268).
+| Is the English–Indonesian gap about language? (R161, R164, R172) | Mainly data repetition and the evaluation set's relation to the training text, not language. With English text seen less than once, English behaves like Indonesian | withheld | | I345, I346, I362 |
+| Does a hashed n-gram input memory help the organization? (R184, R188) | Yes; it joined the best system (A051). Prior art: Over-Encoding and the modded-nanogpt lineage | withheld | | I370, I371 |
+| A051 against a plain dense Transformer (diagnostic) | | 0.038 (English) / 0.055 (Indonesian Wikipedia) | ESTIMATED | I370, I396 |
+| A051 against partial optimized opponents, ≤ 4M (R211) | Survives at this scale | 0.26–0.54 | ESTIMATED | I399 |
+| What carries the remaining edge? (R212) | Mostly in-window copying, not memorized text | withheld | | I401 |
+| Is there an original training-compute lever at laptop scale? (DE_NOVO 21–25) | None found; stop rule fired | | | I400–I403 |
+| The counted organization at 4.7–18.9M on GPU (R213) | Edge shrinks, and disappears on web text; copying carries all of it | 0.51–0.57 Wikipedia text; about 1.0 web text | ESTIMATED | I404 |
+| A published small-model recipe against plain Transformers at 20M (R214) | The bar rises sharply | 0.58× time / 0.43× FLOPs | MEASURED / ESTIMATED | I406 |
+| Five candidates against that recipe at 20M (R214) | None reaches 0.75. Count and copy channels help early, then fade | withheld | | I406 |
+| Cheap published levers on the recipe at 20M (R215) | Small FLOP gains, no wall-clock gain | withheld | | I410 |
+| A gated delta hybrid at 20M and 85M; a mixture of experts at 85M (R217–R219) | Small FLOP gains, far from 0.75; slower per update in our implementations | withheld | | I412–I414 |
+| Inference side: decoding, table size, quantization, speculative decoding (10–12 Oct) | Measured | withheld | | I355, I356, I376, I377, I379, I384, I387, I394 |
+| Table construction cost (accounting) | Larger than first stated, still under 1% of training | about 0.65% of training time | MEASURED | I359 |
 
 ## Gate status
 
-| Gate | CIR-specific organizations (D2) | Generic counted organization (D1) |
-|---|---|---|
-| ≤ 0.75 signal | Not reached (best 0.949–0.985×) | Passed, both languages |
-| ≤ 0.50 interesting | Not reached; analytically out of reach for mixer substitution here | Passed, both languages; inference about 0.49× |
-| ≤ 0.20 industry-level | Not reached | Passed: English 0.149× (one run), Indonesian 0.032× |
-| ≤ 0.10 breakthrough-level | Not reached | **Partly passed:** on average and in Indonesian, two seeds; **not in English** |
+| Gate | Primary: strong optimized Transformer system | Partial optimized opponents | Plain Transformers (diagnostic) |
+|---|---|---|---|
+| ≤ 0.75 signal | **Not reached** | Passed at ≤ 4M (0.26–0.54); not at 20M on web text | Passed |
+| ≤ 0.50 interesting | **Not reached** | Partly at ≤ 4M | Passed |
+| ≤ 0.20 industry-level | **Not reached** | Not reached | Passed |
+| ≤ 0.10 breakthrough-level | **Not reached** | Not reached | Passed at ≤ 3M (0.038–0.063) |
 
-All D1 passes are PROVISIONAL, generic, prior art, and limited to networks ≤ 1.4M parameters on one CPU.
-
-## Active threats
-
-1. **Language and data repetition.** The English gain is small and disappears at 2× and 4× budget, where the 3.86M-token English corpus is seen 6–13 times. Under test in R161.
-2. **Scale.** Networks ≤ 1.4M parameters, data ≤ about 200M tokens, opponents ≤ width 448. Larger Transformers may catch up above 4× budget; a fitted equivalent-compute multiplier of about 15× partly reflects the fixed-size opponent's capacity limit.
-3. **Prior art.** The organization is known (modded-nanogpt PR #380; infini-gram; cache language models).
-4. **Deployment.** Decode cost unmeasured; count tables about 434 MB.
-5. **Gate dependence.** The gate needs about 4,000 tokens of in-domain text; it does not transfer across languages.
-6. **D2.** No CIR-specific primitive that reduces dense computation for language quality has been found.
+Passes against plain Transformers are diagnostic only (charter v1.1). They do not count toward the primary objective.
 
 ## Active and queued work
 
-| ID | Question | Status |
-|---|---|---|
-| R161 | With the Indonesian corpus cut to the English size (so it repeats as often), does the Indonesian advantage collapse? | UNDER EVALUATION (training) |
-| Decode | Token-by-token generation cost of the counted organization | Queued |
-| Tables | Smaller count tables without quality loss | Queued |
-| English | Larger English corpus or a larger English network | Conditional on R161 |
-| Ladder | Opponents larger than B1A width 320 above 4× budget | Conditional; heavy for current hardware |
+None. Drafted but not run: a fine-grained mixture of experts with padding-free dispatch (S6) and a combined run (S7). They run only if the owner restarts the primary lane.
 
-## What would falsify the current direction
+## What would reopen the primary lane
 
-- R161 shows the Indonesian gain survives heavy repetition, so the English gap is about language.
-- A larger English corpus still leaves English above 0.10×.
-- A larger Transformer above 4× budget matches the counted organization.
-- Decode cost or table memory erases the inference advantage.
+- An owner decision to restart it, with a compute budget.
+- New evidence that a lever's advantage grows with scale within a budget the program can test.
+
+## Earlier phases
+
+The CIR-specific recurrent mixers (A010, A025) were closed for general language modeling at this scale on 4 October; see [falsified-and-superseded.md](falsified-and-superseded.md). The counted organization's results through 10 October remain in [research-log.md](research-log.md) and [../results/current-evidence.md](../results/current-evidence.md) with updated statuses.

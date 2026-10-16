@@ -2,6 +2,21 @@
 
 Results CIR no longer believes, and why. Each one reduced uncertainty: it closed a branch of the search or fixed a measurement. Implementation details of failed candidates are summarized, not disclosed.
 
+Entries added on 2026-10-16 cover 10–15 October. Exact outcomes of R161–R219 are withheld for now ([publication-policy.md](publication-policy.md#withheld-results)); those entries state conclusions and evidence IDs.
+
+## Corrections published on 2026-10-16
+
+Earlier public statements that later evidence showed to be wrong or mislabeled. The original text stays in [research-log.md](research-log.md).
+
+| Published statement | Correction | Status | Evidence |
+|---|---|---|---|
+| "Unseen Indonesian Wikipedia: 0.053 / 0.055×. The advantage survives text outside training" (9 Oct) | The set is held-out text from the same source as the Indonesian training corpus (Wikipedia), so it is in-distribution, not a domain shift. The Indonesian set used for the per-language claims, UD Indonesian-GSD (news and blogs), is the one outside the training distribution | RELABELLED | I341 |
+| "The advantage differs sharply by language" (10 Oct): Indonesian 0.032×, English 0.149× at best | Follow-up tests traced the gap mainly to data repetition (the small English corpus repeats) and to the evaluation sets' different relations to the training text, not to language | SUPERSEDED (interpretation) | I345, I346, I362 |
+| Per-language ratios compared directly across languages | The BPE-2,048 tokenizer was trained with about 1.6% Indonesian text; Indonesian averages 2.04 bytes per token against 2.82 for English, so many Indonesian tokens are predictable word pieces. Per-token ratios across languages are tokenizer-specific | CAVEAT ADDED | I350 |
+| "Counting the tables costs about 0.1–0.2% of training" | Measured: about 0.65% of the training time of A039; the headline ratio rises from 0.0625 to about 0.063 | SUPERSEDED by measurement | I359 |
+| The counted organization passes the breakthrough gate on average (0.0625×, 8–10 Oct) | The measurement stands, but under charter v1.1 it is a diagnostic ratio against moderately tuned Transformers. Against partial optimized opponents the best laptop-scale system is at 0.26–0.54, and at the first GPU scale point the counted organization is about 1.0 on web text | DIAGNOSTIC ONLY (headline revoked) | I399, I404 |
+| "Frontier attacks on the counted claim: four opponent routes all cost more" (8–10 Oct) | Opponents built from the same published parts (n-gram interpolation, input memory) were not among those routes; against them the best laptop-scale system (A051) is at 0.26–0.54 | SUPERSEDED | I399 |
+
 ## Claims withdrawn or superseded
 
 | Former claim | What changed | Status | Evidence |
@@ -28,6 +43,9 @@ Results CIR no longer believes, and why. Each one reduced uncertainty: it closed
 | Macro (average) claims stand for each language | Indonesian 0.032× but English 0.149× at best | REVOKED as a reporting rule | I337, I338 |
 | Epoch-regime prediction (R160) | Failed its frozen prediction; causal test moved to R161 | FALSIFIED (prediction) | I340 |
 | A010 keeps a BPB cost advantage over every Transformer tested | B1A (one attention layer) matches the previous baseline at 0.50× per-update cost; A010 is 1.23–1.27× against it | FALSIFIED against the frontier baseline | I242, I248 |
+| The counted organization keeps its advantage at larger scale | At 4.7–18.9M on one A100, against published n-gram interpolation: 0.51–0.57 on Wikipedia text and about 1.0 on web text like the training data; in-window copying carries all of the remaining edge | FALSIFIED for web text; scaling not continued | I404 |
+| Counted or copy input channels are a training-compute lever on a strong recipe | They speed up early training, then fade before about a fifth of an epoch at 20M; no arm passed | FALSIFIED in this regime | I406 |
+| A CIR-original training-compute lever exists at laptop scale | Five first-principles cycles produced only rediscoveries or primitives below a minimum value bound; stop rule fired. Credence about 3% | NOT FOUND (search stopped) | I400–I403 |
 
 ## Directions ruled out
 
@@ -41,10 +59,14 @@ Results CIR no longer believes, and why. Each one reduced uncertainty: it closed
 | Recurrent state replacing distant attention | Restricting attention to a window costs A010 as much BPB as B1A, and A010's state carries about 0% of verbatim copies past the window | I247, I250 |
 | Long-context recurrence route at this scale (hypothesis H031) | Softmax models at 4M copy almost nothing beyond about 2,000 tokens even with full attention; only exact n-gram indices are distance-independent, and those are a generic module. Credence about 5% | I246, I250 |
 | An organization with no learned mixer at all (n-gram heads only) | Considered and rejected before running: an artifact of the shallow, lookup-favoring regime that literature shows does not hold at scale | I250, literature |
-| An implementation optimization for A010's recurrent kernel | Numerically equivalent but not faster for A010 (memory-bound); the same idea did help a thinner mixer, now under test | I181, I249 |
+| An implementation optimization for A010's recurrent kernel | Numerically equivalent but not faster for A010 (memory-bound); the same idea did help a thinner mixer (A025, whose family was later closed) | I181, I249 |
 | A training-rule lever specific to recurrent organizations | First-principles pass: selective backward, low-rank updates, layer skipping and count-based statistics all apply to Transformers too, so they are neutral under D2. The only recurrent-specific lever (state carried across windows) adds little information on this data | reset, 4 Oct |
 | Removing dense projections from thin mixers (R74) | Cancelled before running: the thin-mixer family was closed by R81/R82 | direction decision, 4 Oct |
 | A selective-backward learning-rule idea (A023) | Cheap tier-1 test gave weak support; deferred | I226 |
+| Scaling the counted organization to 85M (stage A1) | Not recommended after the 20M point: the edge disappeared on in-distribution web text | I404 |
+| Five candidates against the strong 20M recipe: a mixture of experts, depth-attention residuals, counted predictive embeddings, width growth, an exact-copy feature | None reached 0.75; outcomes withheld | I406 |
+| Cheap published levers on the strong recipe at 20M (Canon layers, gated attention, sequence-length warmup) | Small FLOP gains, no wall-clock gain; outcomes withheld | I410 |
+| A gated delta / attention hybrid on the strong recipe (20M, 85M) and a mixture of experts (85M) | Small FLOP gains far from 0.75, slower per update in our implementations; outcomes withheld | I412–I414 |
 
 ## Measurement and method errors found
 
@@ -59,6 +81,10 @@ Results CIR no longer believes, and why. Each one reduced uncertainty: it closed
 | A ratio criterion with a noisy denominator | A prediction "passed" on noise | Ratio criteria must require a significant denominator | I250 |
 | An unverified FLOP claim in the ledger (windowed attention savings) | Understated a baseline threat (17% vs up to 30%) | Corrected with an explicit block count; arithmetic claims are now computed before being recorded | I247 |
 | Screening a candidate at intermediate quality | Fast early gains from static modules looked like a cost breakthrough | Promotion requires multi-Q curves including final Q and a matched-module baseline | I222, I240 |
+| Evaluation sets with different relations to the training text compared across languages | A language gap was read where part of it was the evaluation set | Provenance of every evaluation set recorded; per-language comparisons only on matched relations | I341, I346 |
+| A tokenizer trained on very little Indonesian | Cross-language per-token comparisons partly measured the tokenizer | Tokenizer composition reported with every cross-language ratio; bits per byte for tokenizer comparisons | I350 |
+| An auxiliary cost stated from an estimate (table construction) | Understated by 3–6× (still under 1%) | Auxiliary costs are measured, not stated | I359 |
+| FLOP savings read as cost savings | FLOP gains of published levers, a hybrid and a mixture of experts did not survive in measured time | Primary claims report measured time on named hardware next to FLOPs | I410, I412–I414 |
 
 ## Hypotheses falsified or weakened
 

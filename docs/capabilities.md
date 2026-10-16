@@ -4,6 +4,8 @@
 
 Comparisons are A010 against the strongest relevant Transformer at the same scale, at 1,500 updates, unless stated. Probes are exploratory (frozen predictions, one evaluation set) unless marked otherwise.
 
+Rows describe the laptop phase through 10 October 2026. On the GPU (14–15 Oct) grammar was checked with BLiMP as a guard on every run; those outcomes are withheld for now ([publication-policy.md](publication-policy.md#withheld-results)). Copy and recall guards on the input-memory system (11 Oct) are withheld for the same reason.
+
 | Capability | Current result | Status | Limitation |
 |---|---|---|---|
 | Language prediction (BPB) | Better than gated full-attention and local-global Transformers (0.034–0.041 lower BPB, two seeds). Against B1A: 1.23–1.27× the cost to the same BPB; tie at equal compute | WORSE against the cheapest Transformer | Small bilingual corpus, BPE 2,048 |

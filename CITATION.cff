@@ -1,23 +1,27 @@
 cff-version: 1.2.0
-message: "If you refer to this material, please cite it as below. It describes research in progress; cite the snapshot date."
+message: "If you refer to this material, please cite it as below. It describes a research program whose primary lane was paused on 2026-10-15; cite the snapshot date."
 title: "CIR: cost-to-capability research on AI architectures and learning systems (research repository)"
 type: generic
 authors:
   - name: "DotrixAI"
     website: "https://dotrixai.com"
-version: "2026-10-10"
-date-released: "2026-10-10"
+version: "2026-10-16"
+date-released: "2026-10-16"
 url: "https://dotrixai.com/cir"
 repository: "https://github.com/DotrixAI/cir-research"
 abstract: >-
-  CIR is a DotrixAI research program investigating AI architectures and learning
-  systems with lower cost-to-capability than strong Transformer baselines. This
-  repository documents the objective, methodology, current evidence, negative and
-  superseded results, and limitations. It does not contain the CIR implementation.
+  CIR is a DotrixAI research program on the training compute needed to reach a
+  given capability, compared with strong optimized Transformer systems. Its primary
+  lane was paused on 2026-10-15 after the target was not reached. This repository
+  documents the objective, methodology, evidence, negative and superseded results,
+  limitations and the reasons for the pause. It does not contain the CIR
+  implementation.
 keywords:
   - cost-to-capability
   - efficient language models
   - recurrent models
   - delta rule
   - baselines
+  - training compute
+  - pre-registration
   - research methodology

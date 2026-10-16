@@ -2,6 +2,23 @@
 
 Small-scale results do not establish large-scale behavior. This document separates what was MEASURED, what was ESTIMATED from measurements, and what is PROJECTED or hypothesized.
 
+## GPU phase (14–15 October 2026)
+
+The first runs beyond the laptop used one rented A100 GPU, one epoch of 0.38B tokens of English and Indonesian web text (FineWeb-Edu, FineWeb-2), a 32,768-token BPE vocabulary and one seed. Exact outcomes of these runs are withheld for now except the values below ([publication-policy.md](publication-policy.md#withheld-results)).
+
+| Question | Scale | Observation | Label | Evidence |
+|---|---|---|---|---|
+| Does the counted organization keep its edge? | dense Transformers of 4.7 / 10.6 / 18.9M non-embedding parameters | Against published n-gram interpolation: 0.51–0.57 on Wikipedia text, about 1.0 on web text like the training data. In-window copying carries all of the rest, and the extra gain shrinks as the network grows | ESTIMATED | I404 |
+| How strong is a published small-model recipe? | 20M | About 0.58× the time (MEASURED) and 0.43× the FLOPs (ESTIMATED) of plain Transformers at matched quality | MEASURED / ESTIMATED | I406 |
+| Do candidates beat that recipe? | 20M | Five candidates and a stack of cheap published levers: none reached 0.75. Count and copy channels help early, then fade before about a fifth of an epoch | — | I406, I410 |
+| Do published architecture shifts beat it? | 20M and 85M | A gated delta hybrid (20M, 85M) and a mixture of experts (85M): small FLOP gains, far from 0.75, slower per update in our implementations. The hybrid's per-FLOP advantage did not grow from 20M to 85M | — | I412–I414 |
+
+Published work reports that hybrid and mixture-of-experts advantages grow at much larger scales (hundreds of millions to tens of billions of parameters). Within 20–85M and one epoch the gains stayed small, and the hybrid's per-FLOP advantage shrank rather than grew. Testing it fairly is beyond the program's current resources ([direction-change.md](direction-change.md)).
+
+## Laptop phase
+
+The sections below cover the laptop phase (up to 13 October 2026): one CPU, networks up to about 7M parameters.
+
 ## Scale points tested
 
 | Width | Effective parameters | Tokens | Tokens per parameter | Comparisons |
@@ -61,4 +78,4 @@ Confounds and caveats:
 3. Reproduction with a second seed at the largest width.
 4. Confirmation on at least one additional hardware type, preferably GPU.
 
-None of these conditions is currently met for CIR-specific architectures. For the generic counted organization, condition 1 holds only on average and in Indonesian across a budget ladder at fixed network size, not across network sizes or for English. Runs at 30M+ parameters or 16K+ context would take days to weeks each on the current hardware and are not scheduled.
+None of these conditions is currently met for CIR-specific architectures. For the generic counted organization, condition 1 holds only on average and in Indonesian across a budget ladder at fixed network size, not across network sizes or for English. (Written 10 Oct; the English part was later traced to data repetition.) Since 12 October the conditions apply against FAIR-OPT; at the first GPU scale point the counted organization did not meet condition 1 against a partial FAIR-OPT on web text. No run is scheduled while the primary lane is paused.

@@ -1,6 +1,6 @@
 # Research timeline
 
-Major turning points only. All dates 2026 (UTC). Earlier work (before 24 September) explored recurrent and memory architectures at shorter contexts and is summarized in the first row.
+Major turning points only. All dates 2026 (UTC). Rows from 10 October onward were written on 16 October; exact outcomes of R161–R219 are withheld ([publication-policy.md](publication-policy.md#withheld-results)). Earlier work (before 24 September) explored recurrent and memory architectures at shorter contexts and is summarized in the first row.
 
 | Date | Turning point | Belief change |
 |---|---|---|
@@ -31,3 +31,11 @@ Major turning points only. All dates 2026 (UTC). Earlier work (before 24 Septemb
 | 8 Oct | Trained gate 0.0995–0.101×; chunked training 0.077–0.083×; width 128 (A039) **0.0625–0.0634×**; TF-LGN cost correction (~5%) | 0.10 gate passed on average under D1 |
 | 9 Oct | Inference 0.48×; budget ladder flat (0.048–0.067); unseen Indonesian Wikipedia 0.053–0.055×; phase weak spot found via an outside tip and fixed | Claim extended to inference and robustness, still averaged |
 | 10 Oct | **Per-language correction:** Indonesian 0.032×, English 0.149× at best; English advantage absent at 2× and 4× budget | Claims reported per language; R161 tests data repetition |
+| 10 Oct | **Language gap traced:** repetition tests (R161, R164) and a large English corpus (R172) point to data repetition and the evaluation set, not language. Corrections: eval-set provenance, tokenizer coverage, table cost | Per-language claims reinterpreted; corrections published 16 Oct |
+| 11 Oct | Hashed n-gram input memory joins the organization (A051); inference side measured (outcomes withheld) | Best laptop-scale system A051; all parts prior art |
+| 12 Oct | **Charter v1.1:** the primary objective is training compute to matched capability against the strongest optimized Transformer system (FAIR-OPT); Transformers allowed, novelty optional. Methodology V2.4–V2.5 | Every ratio against plain Transformers becomes diagnostic |
+| 13 Oct | **Partial FAIR-OPT attack:** 0.26–0.54 at ≤ 4M; every component of A051 and their combination found in published work; five first-principles cycles find no original lever (stop rule) | Complete FAIR-OPT expected ≈ 1 (hypothesis); laptop-scale lever search stopped |
+| 14 Oct | **First GPU scale point** (A100, 4.7–18.9M): the counted organization ≈ 1.0 on in-distribution web text. A published 20M recipe needs ≈ 0.58× the time of plain Transformers; five candidates screened against it, none ≤ 0.75 | Counted organization not scaled further; candidate search moves to published architecture classes |
+| 15 Oct | Published levers, a gated delta hybrid (20M, 85M) and a mixture of experts (85M) on the strong recipe: small FLOP gains, no wall-clock gain, far from 0.75 | No route to the signal gate within the program's resources |
+| 15 Oct | **The owner pauses the primary lane** (13:53 UTC) and chooses a new direction: research tasks for AI research agents built from the CIR record (14:59 UTC) | See [direction-change.md](direction-change.md) |
+| 16 Oct | Public update; exact outcomes of R161–R219 withheld as answer keys of unpublished tasks | Publication exception, dated |

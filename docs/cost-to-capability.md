@@ -11,7 +11,9 @@ TotalCostRatio(Q) ≈ ρ_u × ρ_c
 
 `Q` is defined as "the baseline's quality after N updates", for N = 375, 500, 750, 1,000, 1,250, 1,500. A ratio below 1 favors CIR.
 
-All ratios below are ESTIMATED (computed from MEASURED BPB curves and MEASURED per-update timings). They hold only for the regime in [current-state.md](current-state.md#experimental-regime).
+> **Since 12 October 2026 (charter v1.1)** the primary ratio is training compute to matched `Q` against the strongest optimized Transformer system (FAIR-OPT), reported as measured time on named hardware next to counted FLOPs. The laptop-phase ratios below were measured against TF-LGN and B1A and are now diagnostic. Table construction is part of training compute: it was measured on 10 Oct at about 0.65% of A039's training time (first stated as 0.1–0.2%), which moves the headline ratio from 0.0625 to about 0.063 (I359).
+
+All ratios below are ESTIMATED (computed from MEASURED BPB curves and MEASURED per-update timings). They hold only for the regime in [current-state.md](current-state.md#experimental-regimes).
 
 ## Cost per update (ρ_c), MEASURED
 
@@ -146,5 +148,8 @@ A fit `L(C) = E + A·C^−γ` with a separate asymptote per arm gives an equival
 | Cheaper-inference variant, vectorized lookup | 0.48 (0.41× TF-LG, 0.81× B1A) | I328 |
 | Overlapping chunks | 0.49 | I333 |
 
-Measured in interleaved sessions (8 rounds, calibrated each round). Token-by-token decode is not measured. Count tables at 1,500 updates need about 434 MB, about 76× the network weights; pruning singletons saves only 36% of memory at +0.024 bits (I296).
+Measured in interleaved sessions (8 rounds, calibrated each round). Token-by-token decode was measured on 10–11 Oct in PyTorch and in a compiled C runtime; the outcomes are withheld for now (I355, I377, I387). Count tables at 1,500 updates need about 434 MB, about 76× the network weights; pruning singletons saves only 36% of memory at +0.024 bits (I296).
 
+## GPU phase (14–15 October 2026)
+
+On the A100 the ratio was computed in two units side by side: measured time per update in the same session (R_time) and counted training FLOPs (R_FLOP), both at the reference's quality. The two diverged: FLOP savings of published levers, a gated delta hybrid and a mixture of experts did not survive in time with the kernels and dispatch available. Headline values that are public: the counted organization against published n-gram interpolation at 4.7–18.9M (0.51–0.57 on Wikipedia text, about 1.0 on web text; I404) and the strong 20M recipe against plain Transformers (about 0.58× time, 0.43× FLOPs; I406). Other GPU outcomes are withheld for now ([publication-policy.md](publication-policy.md#withheld-results)).

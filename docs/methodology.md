@@ -1,10 +1,10 @@
 # Methodology
 
-A compressed public summary of the CIR research method (internal version 2.1, adopted 2026-10-03). It describes how decisions are made, not how candidates are implemented.
+A compressed public summary of the CIR research method. Sections 1–15 summarize internal version 2.1 (adopted 2026-10-03); later changes up to version 2.5 (2026-10-12) are in sections 16 and 17. It describes how decisions are made, not how candidates are implemented.
 
 ## 1. Objective and metric
 
-The primary metric is total cost to reach capability `Q` ([objective.md](objective.md)), reported as a curve over several quality levels, not one endpoint. Cost is decomposed as `TotalCostRatio(Q) ≈ ρ_u × ρ_c` and both factors are tracked separately ([cost-to-capability.md](cost-to-capability.md)).
+The primary metric is total cost to reach capability `Q` ([objective.md](objective.md)), reported as a curve over several quality levels, not one endpoint. Since version 2.5 the primary metric is training compute to matched `Q` against the strongest optimized Transformer system (FAIR-OPT); see section 17. Cost is decomposed as `TotalCostRatio(Q) ≈ ρ_u × ρ_c` and both factors are tracked separately ([cost-to-capability.md](cost-to-capability.md)).
 
 Every number is labeled MEASURED, ESTIMATED or PROJECTED, and the three are never mixed.
 
@@ -116,3 +116,14 @@ Version 2.3 (2026-10-10) added rules for turning evidence into systems:
 - **Full-system accounting.** Table building, data exposure, gate fitting, training, prefill, decode, memory and serving are all recorded. **Averages across languages may not hide a failing language**: claims are reported per language.
 - **Attribution.** Imported mechanisms carry provenance and are never claimed as inventions. Improvements from known methods are reported as systems or organization advances, not CIR-specific architecture advances.
 
+## 17. Changes in versions 2.4 and 2.5 (12 October 2026)
+
+Version 2.4 responded to problems found in an internal review: an architecture document that lagged the implementation, post-run steps that were skipped unless a tool enforced them, symmetric opponent comparisons run too late, local incumbent tuning crowding out higher-upside work, and session continuity lost when the AI researcher's context was compressed. Version 2.5 adopted the clarified charter (v1.1):
+
+- **Charter binding.** Every working session starts by reading the charter and the method in full and recording that it did so; a tool checks it before any research work.
+- **FAIR-OPT is the primary denominator.** Every claim table names it first. D1 (plain Transformer) is diagnostic; FAIR-PARTIAL and D2 are for attribution and novelty. Past D1 claims are re-evaluated before promotion.
+- **Experiment cards.** Each experiment has a card with the hypothesis, arms, predictions with probabilities, pass/fail criteria and the interpretation of each outcome, frozen and timestamped before the run. Post-freeze corrections are recorded separately.
+- **Post-run audit and architecture sync.** After every verdict a tool checks that the claim names its denominators, that the ledgers are updated and that the architecture document matches the evidence.
+- **Economic gate.** Before a family gets runs, the best possible ratio is bounded from its cost decomposition (for example, what the ratio would be if a component were free).
+- **First-principles search with a stop rule.** Each de-novo cycle starts from several independent points, and a candidate must pass a prior-art check and a minimum value bound. A reset on 13 October added a stop rule: two consecutive cycles without such a candidate stop the laptop-scale search, and the owner is told. It fired the same day.
+- **Owner control.** Spending, downloads, publication and restarting work the owner stopped all need explicit owner permission.

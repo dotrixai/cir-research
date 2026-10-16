@@ -42,7 +42,7 @@ Since 2026-10-06 the main line is not a CIR-specific architecture. It is an orga
 | Part | Description |
 |---|---|
 | Network | a small one-attention Transformer of the B1A family: width 192 (1.43M parameters) or width 128 (0.82M, configuration A039) |
-| Counted prior | n-gram tables per domain, counted once from exactly the training tokens the network saw, no gradient; counting costs about 0.1–0.2% of training |
+| Counted prior | n-gram tables per domain, counted once from exactly the training tokens the network saw, no gradient; counting costs about 0.65% of A039's training time (measured 10 Oct; first stated as 0.1–0.2%) |
 | In-context cache | n-gram counts from the current document |
 | Pointer | a longest-match expert that predicts the continuation of the longest earlier match in the context |
 | Gate | a tiny trained mixing gate (under 100 parameters) over features that do not use the target; tuned on a few thousand tokens of in-domain text |
@@ -50,7 +50,29 @@ Since 2026-10-06 the main line is not a CIR-specific architecture. It is an orga
 
 The mixture is formed at inference. Training the network jointly with the counts inside the loss failed (I276). The gate does not transfer across languages (I302, I303). Exact feature sets and implementation are not published.
 
-Variants: A036 (width 192, windowed attention), A037 (width 192, chunked training), A039 (width 128, chunked training; the cheapest measured), A040 (width 96; no better), A041 (attention in the first layer; worse).
+Variants: A036 (width 192, windowed attention), A037 (width 192, chunked training), A039 (width 128, chunked training; the cheapest measured through 10 Oct), A040 (width 96; no better), A041 (attention in the first layer; worse), **A051** (A039 plus hashed bigram and trigram input embeddings; the best laptop-scale system from 11 Oct).
+
+Under charter v1.1 (12 Oct) these are measured against FAIR-OPT. Every part above, including the hashed input embeddings and the combination with counted tables, a cache and a learned gate, has published prior art in the modded-nanogpt lineage (found 13 Oct, I399).
+
+## GPU phase (14–15 October 2026)
+
+Runs on one rented A100 with a 32,768-token vocabulary, 1,024-token context and one epoch of 0.38B tokens. Exact outcomes are withheld for now ([publication-policy.md](publication-policy.md#withheld-results)).
+
+| Name | What it is | Role | Outcome |
+|---|---|---|---|
+| A0 family | plain dense Transformers, 4.7 / 10.6 / 18.9M non-embedding parameters | plain reference and testbed for the counted organization | counted organization about 1.0 on web text (I404) |
+| FO-L1 | the 10.6M dense core plus a hashed n-gram input memory, value embeddings, skip connections, a logit softcap and a warmup-stable-decay schedule | dated strong recipe at 20M; partial FAIR-OPT | about 0.58× the time of the plain family at matched quality (I406) |
+| dense85 | the same recipe at width 768 and 12 layers (85M non-embedding) | 85M reference | reference for A080 and A081 (I413) |
+| A068 | a mixture of experts on FO-L1: a shared expert plus 8 routed experts, top-2 | candidate, 20M | did not reach 0.75 (I406) |
+| A069 | depth-attention residuals: each block reads a learned weighted sum of all earlier block outputs | candidate, 20M | did not reach 0.75 (I406) |
+| A070 | counted predictive embeddings: counted next-token statistics of short contexts fed as input | candidate, 20M | did not reach 0.75 (I406) |
+| A071 | width growth: a narrow model trained first, then widened by function-preserving cloning | candidate, 20M | did not reach 0.75 (I406) |
+| A072 | an exact-copy input feature | candidate, 20M | did not reach 0.75 (I406) |
+| A074, A077 | Canon layers alone; Canon layers plus gated attention and sequence-length warmup (A075, A076 as parts) | cheap published levers, 20M | small FLOP gains, no time gain (I410) |
+| A078, A081 | gated delta / attention hybrids (two gated delta layers per attention layer) at 20M and 85M; fused Triton kernels at 85M | published architecture shift | small FLOP gains, slower per update (I412, I414) |
+| A080 | the A068 mixture of experts at 85M | published conditional computation | small FLOP gain, slower per update (I413) |
+
+None of these is a CIR-original mechanism. Under the decision of 15 October 2026 (owner decision CC-003), published architecture classes count as possible CIR answers if they beat FAIR-OPT, with full attribution.
 
 ## Baselines
 
@@ -87,5 +109,12 @@ CIR makes no novelty claim for any component above. Closest published work:
 | Fewer attention layers | PAR Transformer, arXiv:2009.04534; "What Matters in Transformers?", arXiv:2406.15786 |
 | Muon optimizer | Jordan, 2024 (blog); Muon on associative memory, arXiv:2509.26030 |
 | Formal-language pre-pretraining | Hu et al., ACL 2025, arXiv:2502.19249; neural cellular automata pre-pretraining, arXiv:2603.10055 |
+| Hashed n-gram input embeddings (Over-Encoding) | Over-Tokenized Transformer, arXiv:2501.16975; modded-nanogpt records with bigram hash embeddings (2026) |
+| Gated delta rule and hybrids with attention | Gated DeltaNet, arXiv:2412.06464; Olmo Hybrid, arXiv:2604.03444; flash-linear-attention kernels (fla-org) |
+| Mixtures of experts, fine-grained experts | Switch Transformers, arXiv:2101.03961; DeepSeekMoE, arXiv:2401.06066; fine-grained MoE scaling laws, arXiv:2402.07871 |
+| Canon layers | Physics of Language Models, arXiv:2512.17351 |
+| Gated attention | Qiu et al., arXiv:2505.06708 |
+| Value residuals / value embeddings | ResFormer, arXiv:2410.17897; modded-nanogpt |
+| Warmup-stable-decay schedule | MiniCPM, arXiv:2404.06395 |
 
-What CIR contributes so far is the measurement discipline (matched-capability cost accounting against deliberately strengthened baselines, identical data exposure verified by hash, leakage-free metrics, frozen predictions) and the resulting map of which primitives matter at this scale. It is not a new architecture, and the counted organization is not a new method.
+What CIR contributes so far is the measurement discipline (matched-capability cost accounting against deliberately strengthened baselines, identical data exposure verified by hash, leakage-free metrics, frozen predictions) and the resulting map of which primitives matter at this scale. It is not a new architecture, and the counted organization is not a new method. The pre-registered record of how these primitives fared against strong opponents is the basis of DotrixAI's new research-task direction ([direction-change.md](direction-change.md)).
